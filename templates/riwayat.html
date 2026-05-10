@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Konsultasi — MediExpert{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Beranda</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Riwayat Konsultasi</span>
+        </div>
+        <h1><i class="fas fa-history"></i> Riwayat Konsultasi</h1>
+        <p>Rekam jejak semua sesi diagnosa yang telah dilakukan</p>
+    </div>
+</section>
+
+<section class="section">
+<div class="container">
+
+    <!-- ===== STATISTIK CARDS ===== -->
+    <div class="stats-row">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #3B82F6, #6366F1)">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div>
+                <div class="stats-num">{{ statistik.total }}</div>
+                <div class="stats-lbl">Total Konsultasi</div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #10B981, #06B6D4)">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div>
+                <div class="stats-num">{{ statistik.labels | length }}</div>
+                <div class="stats-lbl">Jenis Diagnosa</div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #F59E0B, #EF4444)">
+                <i class="fas fa-star"></i>
+            </div>
+            <div>
+                <div class="stats-num">
+                    {% if statistik.labels %}{{ statistik.labels[0] | truncate(14, True, '…') }}{% else %}—{% endif %}
+                </div>
+                <div class="stats-lbl">Diagnosa Terbanyak</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CHART ===== -->
+    {% if statistik.total > 0 %}
+    <div class="chart-section">
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-doughnut"></i> Distribusi Diagnosa</h3>
+            <div class="chart-wrap">
+                <canvas id="chartDiagnosa" height="280"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-bar"></i> Jumlah per Diagnosa</h3>
+            <div class="chart-wrap">
+                <canvas id="chartBar" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===== TABLE RIWAYAT ===== -->
+    <div class="table-card">
+        <div class="table-header">
+            <h3><i class="fas fa-table"></i> Data Konsultasi</h3>
+            <div class="table-actions">
+                <input type="text" id="searchRiwayat" placeholder="Cari nama/diagnosa..." class="search-input">
+            </div>
+        </div>
+
+        {% if riwayat %}
+        <div class="table-wrap">
+            <table class="riwayat-table" id="tableRiwayat">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Pasien</th>
+                        <th>Diagnosa</th>
+                        <th>Kecocokan</th>
+                        <th>Gejala Dipilih</th>
+                        <th>Waktu</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in riwayat %}
+                    <tr class="riwayat-row">
+                        <td class="td-id">{{ item.id }}</td>
+                        <td class="td-nama">
+                            <div class="pasien-avatar">
+                                {{ item.nama_pasien[0] | upper }}
+                            </div>
+                            <span>{{ item.nama_pasien }}</span>
+                        </td>
+                        <td class="td-diagnosa">
+                            <span class="diagnosa-badge {% if 'Kemungkinan' in item.diagnosa %}maybe{% elif 'Tidak' in item.diagnosa %}none{% else %}yes{% endif %}">
+                                {{ item.diagnosa }}
+                            </span>
+                        </td>
+                        <td class="td-skor">
+                            <div class="mini-bar-wrap">
+                                <div class="mini-bar" style="width: {{ item.skor }}%"></div>
+                            </div>
+                            <span>{{ item.skor | round | int }}%</span>
+                        </td>
+                        <td class="td-gejala">
+                            <div class="gejala-pills">
+                                {% for g in item.gejala_nama[:3] %}
+                                <span class="pill">{{ g | truncate(20, True, '…') }}</span>
+                                {% endfor %}
+                                {% if item.gejala_nama | length > 3 %}
+                                <span class="pill-more">+{{ item.gejala_nama | length - 3 }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="td-time">
+                            <i class="fas fa-clock"></i> {{ item.timestamp }}
+                        </td>
+                        <td class="td-aksi">
+                            <form action="{{ url_for('hapus_riwayat', item_id=item.id) }}" method="POST"
+                                  onsubmit="return confirm('Hapus entri ini?')">
+                                <button type="submit" class="btn-hapus" title="Hapus">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>Belum Ada Riwayat</h3>
+            <p>Riwayat konsultasi akan muncul setelah Anda melakukan diagnosa pertama.</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-stethoscope"></i> Mulai Diagnosa
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ---- Chart Data dari Flask ----
+const labels = {{ statistik.labels | tojson }};
+const data   = {{ statistik.data   | tojson }};
+const COLORS  = ['#3B82F6','#EF4444','#F59E0B','#8B5CF6','#10B981','#06B6D4','#F97316','#EC4899'];
+
+if (document.getElementById('chartDiagnosa')) {
+    // Donut Chart
+    new Chart(document.getElementById('chartDiagnosa'), {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: COLORS,
+                borderWidth: 3,
+                borderColor: '#0F172A',
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#CBD5E1', padding: 16, font: { size: 12 } }
+                }
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Bar Chart
+    new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Kasus',
+                data: data,
+                backgroundColor: COLORS,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#94A3B8', stepSize: 1 },
+                    grid: { color: 'rgba(148,163,184,0.1)' }
+                },
+                x: {
+                    ticks: { color: '#94A3B8' },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+}
+
+// ---- Search Table ----
+document.getElementById('searchRiwayat')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#tableRiwayat tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

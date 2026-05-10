@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Diagnosa — MediExpert{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Animasi khusus halaman hasil */
+    .score-ring {
+        animation: drawRing 1.5s ease forwards;
+    }
+    @keyframes drawRing {
+        from { stroke-dashoffset: 440; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ===== HEADER HASIL ===== -->
+<section class="hasil-header">
+    <div class="hasil-header-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Beranda</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Hasil Diagnosa</span>
+        </div>
+        <div class="hasil-header-content">
+            <div class="hasil-meta">
+                <h1>Hasil Diagnosa</h1>
+                <div class="hasil-info-row">
+                    <span><i class="fas fa-user"></i> {{ nama_pasien }}</span>
+                    <span><i class="fas fa-clock"></i> {{ timestamp }}</span>
+                    <span><i class="fas fa-list-check"></i> {{ hasil.total_gejala }} gejala dipilih</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+<div class="container">
+
+    <!-- ===== GEJALA YANG DIPILIH ===== -->
+    <div class="hasil-gejala-panel">
+        <h3><i class="fas fa-clipboard-list"></i> Gejala yang Dilaporkan</h3>
+        <div class="gejala-tags">
+            {% for g in hasil.gejala_terpilih_detail %}
+            <span class="gejala-tag">
+                <i class="fas fa-check-circle"></i> {{ g.nama }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== DIAGNOSA UTAMA ===== -->
+    {% if hasil.diagnosa_utama %}
+    <div class="diagnosa-utama-card" style="--dc: {{ hasil.diagnosa_utama.warna }}">
+        <div class="du-badge">
+            <i class="fas fa-star"></i> Diagnosa Utama
+        </div>
+        <div class="du-header">
+            <div class="du-icon">
+                <i class="{{ hasil.diagnosa_utama.icon }}"></i>
+            </div>
+            <div class="du-title">
+                <h2>{{ hasil.diagnosa_utama.nama }}</h2>
+                <p>{{ hasil.diagnosa_utama.penyebab }}</p>
+            </div>
+            <div class="du-score-wrap">
+                <svg class="score-svg" viewBox="0 0 150 150">
+                    <circle cx="75" cy="75" r="60" class="score-bg"/>
+                    <circle cx="75" cy="75" r="60" class="score-ring"
+                            stroke-dasharray="377"
+                            stroke-dashoffset="{{ 377 - (377 * hasil.diagnosa_utama.skor / 100) }}"
+                            stroke="{{ hasil.diagnosa_utama.warna }}"/>
+                </svg>
+                <div class="score-text">
+                    <span class="score-num">{{ hasil.diagnosa_utama.skor | round | int }}%</span>
+                    <span class="score-lbl">Kecocokan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Konten -->
+        <div class="du-tabs">
+            <button class="tab-btn active" data-tab="deskripsi">
+                <i class="fas fa-info-circle"></i> Deskripsi
+            </button>
+            <button class="tab-btn" data-tab="analisis">
+                <i class="fas fa-chart-bar"></i> Analisis Gejala
+            </button>
+            <button class="tab-btn" data-tab="saran">
+                <i class="fas fa-notes-medical"></i> Saran Penanganan
+            </button>
+        </div>
+
+        <div class="tab-content active" id="tab-deskripsi">
+            <p class="deskripsi-text">{{ hasil.diagnosa_utama.deskripsi }}</p>
+        </div>
+
+        <div class="tab-content" id="tab-analisis">
+            <div class="analisis-grid">
+                <div class="analisis-group">
+                    <h4><i class="fas fa-check-double" style="color:#10B981"></i> Gejala Wajib Terpenuhi</h4>
+                    <ul>
+                        {% for g in hasil.diagnosa_utama.gejala_wajib_cocok %}
+                        <li class="analisis-item match"><i class="fas fa-check"></i> {{ g }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="analisis-group">
+                    <h4><i class="fas fa-circle-check" style="color:#3B82F6"></i> Gejala Pendukung Cocok</h4>
+                    <ul>
+                        {% for g in hasil.diagnosa_utama.gejala_pendukung_cocok %}
+                        <li class="analisis-item support"><i class="fas fa-check"></i> {{ g }}</li>
+                        {% endfor %}
+                        {% if not hasil.diagnosa_utama.gejala_pendukung_cocok %}
+                        <li class="analisis-item none">Tidak ada gejala pendukung yang cocok</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% if hasil.diagnosa_utama.gejala_tidak_cocok %}
+                <div class="analisis-group">
+                    <h4><i class="fas fa-minus-circle" style="color:#6B7280"></i> Gejala Tidak Dilaporkan</h4>
+                    <ul>
+                        {% for g in hasil.diagnosa_utama.gejala_tidak_cocok %}
+                        <li class="analisis-item miss"><i class="fas fa-minus"></i> {{ g }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <!-- Progress bars -->
+            <div class="score-breakdown">
+                <div class="sb-item">
+                    <span>Gejala Wajib</span>
+                    <div class="sb-bar-wrap">
+                        <div class="sb-bar" style="width:100%; background: #10B981"></div>
+                    </div>
+                    <span>100%</span>
+                </div>
+                <div class="sb-item">
+                    <span>Gejala Pendukung</span>
+                    <div class="sb-bar-wrap">
+                        <div class="sb-bar" style="
+                            width: {{ ((hasil.diagnosa_utama.jumlah_pendukung_cocok / hasil.diagnosa_utama.jumlah_pendukung_total) * 100) | round | int }}%;
+                            background: #3B82F6">
+                        </div>
+                    </div>
+                    <span>{{ hasil.diagnosa_utama.jumlah_pendukung_cocok }}/{{ hasil.diagnosa_utama.jumlah_pendukung_total }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-saran">
+            <div class="saran-list">
+                {% for s in hasil.diagnosa_utama.saran %}
+                <div class="saran-item">
+                    <div class="saran-num">{{ loop.index }}</div>
+                    <p>{{ s }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="saran-disclaimer">
+                <i class="fas fa-triangle-exclamation"></i>
+                <p>Saran ini bersifat informatif. <strong>Konsultasikan dengan dokter profesional</strong> untuk penanganan yang tepat.</p>
+            </div>
+        </div>
+    </div>
+
+    {% elif hasil.kemungkinan_lain %}
+    <!-- ===== TIDAK ADA DIAGNOSA PASTI ===== -->
+    <div class="alert-kemungkinan">
+        <div class="ak-icon"><i class="fas fa-circle-question"></i></div>
+        <div>
+            <h3>Diagnosa Belum Pasti</h3>
+            <p>Berdasarkan gejala yang Anda pilih, sistem belum dapat menentukan diagnosa dengan tingkat keyakinan tinggi (≥70%).
+            Berikut beberapa kemungkinan penyakit yang perlu diperiksa lebih lanjut:</p>
+        </div>
+    </div>
+
+    {% elif hasil.tidak_terdiagnosa %}
+    <!-- ===== TIDAK TERDIAGNOSA ===== -->
+    <div class="tidak-terdiagnosa">
+        <div class="tt-icon"><i class="fas fa-circle-xmark"></i></div>
+        <h3>Tidak Dapat Terdiagnosa</h3>
+        <p>Kombinasi gejala yang Anda pilih tidak cocok dengan penyakit yang ada dalam basis pengetahuan sistem.</p>
+        <div class="tt-saran">
+            <h4><i class="fas fa-lightbulb"></i> Yang Dapat Anda Lakukan:</h4>
+            <ul>
+                <li>Coba pilih lebih banyak gejala yang Anda rasakan</li>
+                <li>Pastikan gejala yang dipilih sesuai dengan kondisi Anda</li>
+                <li>Segera konsultasikan ke dokter atau fasilitas kesehatan terdekat</li>
+            </ul>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Coba Lagi
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- ===== KEMUNGKINAN PENYAKIT LAIN ===== -->
+    {% if hasil.kemungkinan_lain %}
+    <div class="kemungkinan-section">
+        <h3 class="kp-title">
+            <i class="fas fa-list-ol"></i>
+            {% if hasil.diagnosa_utama %}Kemungkinan Penyakit Lain{% else %}Kemungkinan Penyakit{% endif %}
+        </h3>
+        <div class="kp-grid">
+            {% for h in hasil.kemungkinan_lain %}
+            <div class="kp-card" style="--dc: {{ h.warna }}">
+                <div class="kp-header">
+                    <div class="kp-icon"><i class="{{ h.icon }}"></i></div>
+                    <div class="kp-info">
+                        <h4>{{ h.nama }}</h4>
+                        <div class="kp-score-bar-wrap">
+                            <div class="kp-score-bar" style="width: {{ h.skor }}%; background: {{ h.warna }}"></div>
+                        </div>
+                    </div>
+                    <div class="kp-pct" style="color: {{ h.warna }}">{{ h.skor | round | int }}%</div>
+                </div>
+                <p class="kp-desc">{{ h.deskripsi[:120] }}...</p>
+                <div class="kp-gejala">
+                    {% for g in h.gejala_wajib_cocok %}
+                    <span class="tag-mini match">{{ g }}</span>
+                    {% endfor %}
+                    {% for g in h.gejala_pendukung_cocok %}
+                    <span class="tag-mini support">{{ g }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===== ACTION BUTTONS ===== -->
+    <div class="hasil-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Diagnosa Ulang
+        </a>
+        <a href="{{ url_for('riwayat') }}" class="btn btn-ghost">
+            <i class="fas fa-history"></i> Lihat Riwayat
+        </a>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Cetak / Simpan PDF
+        </button>
+    </div>
+
+</div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
+
+// Animasi score ring
+document.querySelectorAll('.score-ring').forEach(ring => {
+    const offset = ring.getAttribute('stroke-dashoffset');
+    ring.style.strokeDashoffset = '377';
+    setTimeout(() => {
+        ring.style.transition = 'stroke-dashoffset 1.5s ease';
+        ring.style.strokeDashoffset = offset;
+    }, 300);
+});
+</script>
+{% endblock %}

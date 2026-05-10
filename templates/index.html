@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}MediExpert — Diagnosa Penyakit Online{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+    <div class="hero-bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-shield-halved"></i>
+                <span>Sistem Pakar Bertenaga AI</span>
+            </div>
+            <h1 class="hero-title">
+                Diagnosa Penyakit <br>
+                <span class="gradient-text">Cepat & Akurat</span>
+            </h1>
+            <p class="hero-desc">
+                Sistem pakar berbasis <strong>Forward Chaining</strong> yang menganalisis gejala Anda
+                secara real-time dan memberikan diagnosa dengan tingkat kecocokan terperinci.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-num">{{ total_penyakit }}</span>
+                    <span class="stat-lbl">Penyakit</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num">{{ total_gejala }}</span>
+                    <span class="stat-lbl">Gejala</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num">FC</span>
+                    <span class="stat-lbl">Metode</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring pulse-ring-2"></div>
+            <div class="hero-icon-wrap">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll">
+        <a href="#form-diagnosa"><i class="fas fa-chevron-down"></i></a>
+    </div>
+</section>
+
+<!-- ===== ALERT ERROR ===== -->
+{% if error %}
+<section class="section-alert">
+    <div class="container">
+        <div class="alert alert-danger" id="errorAlert">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Perhatian!</strong> {{ error }}
+            </div>
+            <button onclick="this.parentElement.remove()" class="alert-close">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ===== FORM DIAGNOSA ===== -->
+<section class="section" id="form-diagnosa">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-clipboard-list"></i> Formulir Gejala
+            </div>
+            <h2>Pilih Gejala yang Anda Alami</h2>
+            <p>Centang semua gejala yang Anda rasakan saat ini. Semakin lengkap, semakin akurat hasil diagnosa.</p>
+        </div>
+
+        <form action="{{ url_for('diagnosa') }}" method="POST" id="formDiagnosa">
+
+            <!-- Nama Pasien -->
+            <div class="input-group-fancy">
+                <label for="namaPasien">Nama Pasien</label>
+                <div class="input-icon"><i class="fas fa-user-injured"></i></div>
+                <input
+                    type="text"
+                    name="nama_pasien"
+                    id="namaPasien"
+                    placeholder="Nama Anda (opsional)"
+                    class="input-fancy"
+                    value="{{ request.form.get('nama_pasien', '') }}"
+                    maxlength="80"
+                    autocomplete="name"
+                >
+            </div>
+
+            <!-- Progress & Counter -->
+            <div class="gejala-counter-wrap">
+                <div class="gejala-counter">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="counterNum">0</span> gejala dipilih
+                </div>
+                <div class="counter-hint">
+                    <span id="hintText" class="hint-warn">Pilih minimal 3 gejala</span>
+                </div>
+                <button type="button" class="btn-reset" id="btnReset">
+                    <i class="fas fa-rotate-left"></i> Reset
+                </button>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <!-- Gejala per Kategori -->
+            <div class="gejala-grid">
+                {% for nama_kategori, info in kategori_gejala.items() %}
+                <div class="gejala-kategori" data-kategori="{{ loop.index }}">
+                    <div class="kategori-header" style="--cat-color: {{ info.warna }}">
+                        <div class="kategori-icon">
+                            <i class="{{ info.icon }}"></i>
+                        </div>
+                        <div class="kategori-info">
+                            <h3>{{ nama_kategori }}</h3>
+                            <span>{{ info.gejala | length }} gejala</span>
+                        </div>
+                        <button type="button" class="btn-pilih-semua" data-kategori="{{ loop.index }}">
+                            Pilih Semua
+                        </button>
+                    </div>
+                    <div class="gejala-list">
+                        {% for gejala_id, gejala_nama in info.gejala.items() %}
+                        <label class="gejala-item {% if gejala_id in (gejala_terpilih or []) %}checked{% endif %}"
+                               for="gejala_{{ gejala_id }}">
+                            <input
+                                type="checkbox"
+                                name="gejala"
+                                id="gejala_{{ gejala_id }}"
+                                value="{{ gejala_id }}"
+                                class="gejala-cb"
+                                {% if gejala_id in (gejala_terpilih or []) %}checked{% endif %}
+                            >
+                            <div class="gejala-check-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="gejala-text">{{ gejala_nama }}</span>
+                            <span class="gejala-id">{{ gejala_id }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Tombol Diagnosa -->
+            <div class="form-action">
+                <button type="submit" class="btn btn-diagnosa" id="btnDiagnosa" disabled>
+                    <span class="btn-content">
+                        <i class="fas fa-magnifying-glass-plus"></i>
+                        <span>Proses Diagnosa Sekarang</span>
+                    </span>
+                    <span class="btn-loading" style="display:none;">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <span>Menganalisis...</span>
+                    </span>
+                </button>
+                <p class="form-note">
+                    <i class="fas fa-lock"></i>
+                    Data Anda tidak dibagikan dan hanya digunakan untuk keperluan diagnosa.
+                </p>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header light">
+            <div class="section-badge light">
+                <i class="fas fa-gear"></i> Cara Kerja
+            </div>
+            <h2>Bagaimana Sistem Bekerja?</h2>
+            <p>Tiga langkah sederhana menggunakan metode Forward Chaining</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
+                <h3>Input Gejala</h3>
+                <p>Pilih semua gejala yang Anda alami dari daftar yang tersedia secara terstruktur per kategori.</p>
+            </div>
+            <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon"><i class="fas fa-brain"></i></div>
+                <h3>Inferensi Pakar</h3>
+                <p>Mesin Forward Chaining mencocokkan gejala dengan basis aturan (rule base) secara sistematis.</p>
+            </div>
+            <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon"><i class="fas fa-file-medical"></i></div>
+                <h3>Hasil Diagnosa</h3>
+                <p>Sistem menampilkan diagnosa dengan persentase kecocokan, penjelasan, dan saran penanganan.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PENYAKIT INFO ===== -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-virus"></i> Basis Pengetahuan
+            </div>
+            <h2>Penyakit dalam Sistem</h2>
+            <p>Sistem pakar ini mendiagnosa {{ total_penyakit }} jenis penyakit berdasarkan gejala klinis</p>
+        </div>
+        <div class="disease-cards">
+            <div class="disease-card" style="--dc: #3B82F6">
+                <i class="fas fa-virus"></i>
+                <h4>Influenza</h4>
+                <p>Infeksi virus akut pada saluran pernapasan</p>
+            </div>
+            <div class="disease-card" style="--dc: #EF4444">
+                <i class="fas fa-biohazard"></i>
+                <h4>COVID-19</h4>
+                <p>Infeksi SARS-CoV-2 pada sistem pernapasan</p>
+            </div>
+            <div class="disease-card" style="--dc: #F59E0B">
+                <i class="fas fa-mosquito"></i>
+                <h4>Demam Berdarah</h4>
+                <p>Infeksi virus Dengue via nyamuk Aedes</p>
+            </div>
+            <div class="disease-card" style="--dc: #8B5CF6">
+                <i class="fas fa-lungs"></i>
+                <h4>Radang Tenggorokan</h4>
+                <p>Peradangan faring oleh bakteri atau virus</p>
+            </div>
+            <div class="disease-card" style="--dc: #10B981">
+                <i class="fas fa-wind"></i>
+                <h4>Asma Bronkial</h4>
+                <p>Peradangan kronis pada saluran napas</p>
+            </div>
+            <div class="disease-card" style="--dc: #06B6D4">
+                <i class="fas fa-head-side-cough"></i>
+                <h4>Batuk Pilek</h4>
+                <p>Infeksi virus pada saluran pernapasan atas</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
