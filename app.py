@@ -5,6 +5,7 @@
 
 import json
 import os
+import sqlite3
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -26,99 +27,150 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "mediexpert_secret_2025")
 
 # ---------------------------------------------------------------------------
-# Supabase Client
+# Supabase Client + SQLite Fallback
 # ---------------------------------------------------------------------------
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
+DB_PATH      = os.path.join(BASE_DIR, "riwayat.db")
 
-supabase: Client = None
+_supabase: Client = None
+_use_sqlite = False   # Will switch to True if Supabase unavailable
+
 
 def get_supabase() -> Client:
-    global supabase
-    if supabase is None:
-        if not SUPABASE_URL or not SUPABASE_KEY:
-            raise RuntimeError("SUPABASE_URL dan SUPABASE_KEY belum dikonfigurasi di .env")
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    return supabase
+    global _supabase
+    if _supabase is None and SUPABASE_URL and SUPABASE_KEY:
+        _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    return _supabase
 
 
-# ---------------------------------------------------------------------------
-# Helper: Simpan & Ambil Riwayat via Supabase
-# ---------------------------------------------------------------------------
+def init_sqlite():
+    """Buat tabel SQLite sebagai fallback."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS riwayat_konsultasi (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nama_pasien TEXT NOT NULL DEFAULT 'Anonim',
+            gejala TEXT NOT NULL,
+            diagnosa TEXT,
+            skor REAL DEFAULT 0,
+            timestamp TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+init_sqlite()
+
 
 def simpan_riwayat(nama_pasien: str, gejala_ids: list, diagnosa: str, skor: float):
-    """Simpan hasil konsultasi ke tabel riwayat_konsultasi di Supabase."""
+    """Simpan ke Supabase; fallback ke SQLite jika gagal."""
+    data = {
+        "nama_pasien": nama_pasien,
+        "gejala": json.dumps(gejala_ids),
+        "diagnosa": diagnosa,
+        "skor": round(skor, 2),
+        "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
+    }
     try:
         db = get_supabase()
-        db.table("riwayat_konsultasi").insert({
-            "nama_pasien": nama_pasien,
-            "gejala": json.dumps(gejala_ids),
-            "diagnosa": diagnosa,
-            "skor": round(skor, 2),
-            "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
-        }).execute()
+        if db:
+            db.table("riwayat_konsultasi").insert(data).execute()
+            return
     except Exception as e:
-        print(f"[WARNING] Gagal simpan riwayat ke Supabase: {e}")
+        print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
+    # Fallback SQLite
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        "INSERT INTO riwayat_konsultasi (nama_pasien,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?)",
+        (data["nama_pasien"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
+    )
+    conn.commit()
+    conn.close()
 
 
 def ambil_riwayat(limit: int = 50) -> list:
-    """Ambil riwayat konsultasi dari Supabase, terbaru di atas."""
+    """Ambil riwayat dari Supabase; fallback ke SQLite jika gagal."""
     try:
         db = get_supabase()
-        resp = (
-            db.table("riwayat_konsultasi")
-            .select("*")
-            .order("id", desc=True)
-            .limit(limit)
-            .execute()
-        )
-        rows = resp.data or []
-        for item in rows:
-            try:
-                gejala_ids = json.loads(item.get("gejala", "[]"))
-                item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
-            except Exception:
-                item["gejala_nama"] = []
-        return rows
+        if db:
+            resp = (
+                db.table("riwayat_konsultasi")
+                .select("*")
+                .order("id", desc=True)
+                .limit(limit)
+                .execute()
+            )
+            rows = resp.data or []
+            for item in rows:
+                try:
+                    gejala_ids = json.loads(item.get("gejala", "[]"))
+                    item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
+                except Exception:
+                    item["gejala_nama"] = []
+            return rows
     except Exception as e:
-        print(f"[WARNING] Gagal ambil riwayat: {e}")
-        return []
+        print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
+    # Fallback SQLite
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute("SELECT * FROM riwayat_konsultasi ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+    conn.close()
+    hasil = []
+    for row in rows:
+        item = dict(row)
+        try:
+            gejala_ids = json.loads(item.get("gejala", "[]"))
+            item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
+        except Exception:
+            item["gejala_nama"] = []
+        hasil.append(item)
+    return hasil
 
 
 def ambil_statistik() -> dict:
-    """Hitung statistik diagnosa dari Supabase."""
+    """Hitung statistik diagnosa; fallback ke SQLite jika Supabase gagal."""
     try:
         db = get_supabase()
-        resp = (
-            db.table("riwayat_konsultasi")
-            .select("diagnosa")
-            .execute()
-        )
-        rows = resp.data or []
-
-        counter: dict = {}
-        for row in rows:
-            label = row.get("diagnosa") or "Tidak Terdiagnosa"
-            counter[label] = counter.get(label, 0) + 1
-
-        sorted_items = sorted(counter.items(), key=lambda x: x[1], reverse=True)
-        return {
-            "labels": [k for k, _ in sorted_items],
-            "data":   [v for _, v in sorted_items],
-            "total":  len(rows),
-        }
+        if db:
+            resp = db.table("riwayat_konsultasi").select("diagnosa").execute()
+            rows = resp.data or []
+            counter: dict = {}
+            for row in rows:
+                label = row.get("diagnosa") or "Tidak Terdiagnosa"
+                counter[label] = counter.get(label, 0) + 1
+            sorted_items = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+            return {"labels": [k for k, _ in sorted_items], "data": [v for _, v in sorted_items], "total": len(rows)}
     except Exception as e:
-        print(f"[WARNING] Gagal ambil statistik: {e}")
-        return {"labels": [], "data": [], "total": 0}
+        print(f"[WARNING] Supabase statistik gagal, fallback SQLite: {e}")
+    # Fallback SQLite
+    conn = sqlite3.connect(DB_PATH)
+    rows = conn.execute("SELECT diagnosa, COUNT(*) FROM riwayat_konsultasi GROUP BY diagnosa ORDER BY 2 DESC").fetchall()
+    total = sum(r[1] for r in rows)
+    conn.close()
+    return {
+        "labels": [r[0] or "Tidak Terdiagnosa" for r in rows],
+        "data": [r[1] for r in rows],
+        "total": total,
+    }
 
 
 def hapus_riwayat_by_id(item_id: int):
-    """Hapus satu entri riwayat dari Supabase."""
+    """Hapus riwayat dari Supabase; fallback ke SQLite."""
     try:
         db = get_supabase()
-        db.table("riwayat_konsultasi").delete().eq("id", item_id).execute()
+        if db:
+            db.table("riwayat_konsultasi").delete().eq("id", item_id).execute()
+            return
     except Exception as e:
-        print(f"[WARNING] Gagal hapus riwayat: {e}")
+        print(f"[WARNING] Supabase hapus gagal, fallback SQLite: {e}")
+    # Fallback SQLite
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM riwayat_konsultasi WHERE id = ?", (item_id,))
+    conn.commit()
+    conn.close()
 
 
 # ===========================================================================
