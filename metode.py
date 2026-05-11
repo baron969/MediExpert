@@ -72,8 +72,11 @@ def hitung_skor_rule(rule: dict, gejala_pasien: set) -> dict:
     return {
         "cocok": True,
         "skor": round(skor_total, 2),
-        "wajib_cocok": list(gejala_wajib),
-        "pendukung_cocok": list(pendukung_cocok),
+        "gejala_wajib_cocok": [SEMUA_GEJALA.get(g, g) for g in gejala_wajib],
+        "gejala_pendukung_cocok": [SEMUA_GEJALA.get(g, g) for g in pendukung_cocok],
+        "gejala_tidak_cocok": [SEMUA_GEJALA.get(g, g) for g in (gejala_pendukung - pendukung_cocok)],
+        "jumlah_pendukung_cocok": len(pendukung_cocok),
+        "jumlah_pendukung_total": len(gejala_pendukung) if gejala_pendukung else 1,
     }
 
 
@@ -116,20 +119,23 @@ def forward_chaining(gejala_ids: list) -> dict:
         if g not in semua_gejala_rules
     ]
 
+    # Detail gejala untuk tampilan
+    gejala_detail = [{"id": gid, "nama": SEMUA_GEJALA.get(gid, gid)} for gid in gejala_ids]
+
     if not ranking:
         return {
             "diagnosa_utama": None,
             "kemungkinan_lain": [],
-            "gejala_dipilih": [SEMUA_GEJALA.get(g, g) for g in gejala_ids],
+            "gejala_terpilih_detail": gejala_detail,
             "gejala_tidak_cocok": gejala_tidak_cocok,
-            "total_gejala_dipilih": len(gejala_ids),
+            "total_gejala": len(gejala_ids),
+            "tidak_terdiagnosa": True,
         }
 
     # Diagnosa utama: skor >= 75%
     THRESHOLD_UTAMA = 75.0
     diagnosa_utama  = ranking[0] if ranking[0]["skor"] >= THRESHOLD_UTAMA else None
-    kemungkinan     = [r for r in ranking if r["skor"] < THRESHOLD_UTAMA]
-
+    
     if diagnosa_utama:
         kemungkinan = [r for r in ranking[1:] if r["skor"] >= 40.0]
     else:
@@ -138,8 +144,9 @@ def forward_chaining(gejala_ids: list) -> dict:
     return {
         "diagnosa_utama": diagnosa_utama,
         "kemungkinan_lain": kemungkinan[:3],
-        "gejala_dipilih": [SEMUA_GEJALA.get(g, g) for g in gejala_ids],
+        "gejala_terpilih_detail": gejala_detail,
         "gejala_tidak_cocok": gejala_tidak_cocok,
-        "total_gejala_dipilih": len(gejala_ids),
+        "total_gejala": len(gejala_ids),
+        "tidak_terdiagnosa": diagnosa_utama is None and not kemungkinan,
         "semua_hasil": ranking,
     }
