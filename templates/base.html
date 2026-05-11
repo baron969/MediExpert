@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistem Pakar Diagnosa Penyakit menggunakan metode Forward Chaining">
-    <title>{% block title %}MediExpert — Sistem Pakar Diagnosa Penyakit{% endblock %}</title>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+    <meta name="description" content="MediExpert - Cek Gejala Penyakit Pernapasan Anda secara online dengan mudah dan cepat.">
+    <title>{% block title %}MediExpert — Cek Kesehatan Pernapasan{% endblock %}</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -24,104 +21,56 @@
 </head>
 <body>
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar" id="navbar">
-    <div class="container">
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container-large">
         <a href="{{ url_for('index') }}" class="navbar-brand">
             <div class="brand-icon">
-                <i class="fas fa-heartbeat"></i>
+                <i class="fas fa-lungs"></i>
             </div>
             <div class="brand-text">
-                <span class="brand-name">MediExpert</span>
-                <span class="brand-sub">Sistem Pakar Penyakit</span>
+                <h4>MediExpert</h4>
+                <span>Pernapasan Sehat</span>
             </div>
         </a>
 
-        <div class="navbar-menu" id="navbarMenu">
-            <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
-                <i class="fas fa-home"></i> Beranda
-            </a>
+        <div class="navbar-menu">
+            <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Cek Gejala</a>
             {% if session.get('logged_in') %}
-            <a href="{{ url_for('riwayat') }}" class="nav-link {% if request.endpoint == 'riwayat' %}active{% endif %}">
-                <i class="fas fa-history"></i> Riwayat
-            </a>
-            <a href="{{ url_for('logout') }}" class="nav-link">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            <a href="{{ url_for('riwayat') }}" class="nav-link {% if request.endpoint == 'riwayat' %}active{% endif %}">Riwayat Pasien</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">Keluar</a>
             {% endif %}
-            <a href="{{ url_for('tentang') }}" class="nav-link {% if request.endpoint == 'tentang' %}active{% endif %}">
-                <i class="fas fa-info-circle"></i> Tentang
-            </a>
-            <a href="{{ url_for('index') }}" class="btn btn-primary nav-cta">
-                <i class="fas fa-stethoscope"></i> Mulai Diagnosa
-            </a>
+            <a href="{{ url_for('tentang') }}" class="nav-link {% if request.endpoint == 'tentang' %}active{% endif %}">Tentang</a>
         </div>
-
-        <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
-            <span></span><span></span><span></span>
-        </button>
     </div>
 </nav>
 
-<!-- ===== MAIN CONTENT ===== -->
-<main class="main-content">
+<!-- Main Content -->
+<main>
     {% block content %}{% endblock %}
 </main>
 
-<!-- ===== FOOTER ===== -->
+<!-- Footer -->
 <footer class="footer">
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <div class="footer-logo">
-                    <i class="fas fa-heartbeat"></i>
-                    <span>MediExpert</span>
-                </div>
-                <p>Sistem pakar berbasis Forward Chaining untuk membantu deteksi dini penyakit secara akurat dan cepat.</p>
-                <div class="footer-badges">
-                    <span class="badge"><i class="fab fa-python"></i> Python Flask</span>
-                    <span class="badge"><i class="fas fa-brain"></i> Forward Chaining</span>
-                </div>
+    <div class="container-large">
+        <div class="footer-content">
+            <div class="brand-icon" style="background-color: var(--bg-main); color: var(--text-muted);">
+                <i class="fas fa-heartbeat"></i>
             </div>
-
-            <div class="footer-links">
-                <h4>Navigasi</h4>
-                <ul>
-                    <li><a href="{{ url_for('index') }}"><i class="fas fa-chevron-right"></i> Beranda</a></li>
-                    {% if session.get('logged_in') %}
-                    <li><a href="{{ url_for('riwayat') }}"><i class="fas fa-chevron-right"></i> Riwayat Konsultasi</a></li>
-                    {% endif %}
-                    <li><a href="{{ url_for('tentang') }}"><i class="fas fa-chevron-right"></i> Tentang Sistem</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-info">
-                <h4>Informasi Sistem</h4>
-                <ul>
-                    <li><i class="fas fa-virus"></i> 6 Penyakit Terdaftar</li>
-                    <li><i class="fas fa-list-check"></i> 30 Gejala Tersedia</li>
-                    <li><i class="fas fa-code-branch"></i> Metode Forward Chaining</li>
-                    <li><i class="fas fa-database"></i> Penyimpanan SQLite</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2024 MediExpert — Sistem Pakar Diagnosa Penyakit. Dibuat untuk keperluan akademis.</p>
-            <p class="disclaimer">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Disclaimer:</strong> Hasil diagnosa bersifat informatif. Selalu konsultasikan ke dokter profesional.
+            <p class="footer-text">
+                <strong>MediExpert</strong> — Sistem deteksi dini gangguan pernapasan.<br>
+                Aplikasi ini hanya untuk tujuan informasi awal, bukan pengganti diagnosis medis dari dokter profesional.
+            </p>
+            <p class="footer-text" style="font-size: 0.8rem;">
+                &copy; 2024 MediExpert. All rights reserved.
             </p>
         </div>
     </div>
 </footer>
 
-<!-- ===== SCRIPTS ===== -->
+<!-- Scripts -->
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
-<!-- Vercel Speed Insights -->
-<script defer src="/_vercel/speed-insights/script.js"></script>
-
 {% block extra_scripts %}{% endblock %}
+
 </body>
 </html>

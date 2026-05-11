@@ -1,174 +1,69 @@
 {% extends "base.html" %}
 
-{% block title %}Tentang Sistem — MediExpert{% endblock %}
+{% block title %}Tentang Kami — MediExpert{% endblock %}
 
 {% block content %}
-
-<section class="page-header">
+<div class="wizard-container" style="padding-top: 60px;">
     <div class="container">
-        <div class="breadcrumb">
-            <a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Beranda</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Tentang Sistem</span>
-        </div>
-        <h1><i class="fas fa-info-circle"></i> Tentang MediExpert</h1>
-        <p>Informasi sistem pakar, metode, dan basis pengetahuan</p>
-    </div>
-</section>
-
-<section class="section">
-<div class="container">
-
-    <!-- ===== TENTANG SISTEM ===== -->
-    <div class="tentang-intro">
-        <div class="tentang-text">
-            <h2>Apa itu MediExpert?</h2>
-            <p>
-                <strong>MediExpert</strong> adalah sistem pakar berbasis web yang dirancang untuk membantu pengguna
-                mengidentifikasi kemungkinan penyakit berdasarkan gejala yang mereka alami. Sistem ini menggunakan
-                metode <strong>Forward Chaining</strong> — salah satu teknik inferensi utama dalam kecerdasan buatan —
-                untuk mencocokkan gejala dengan basis aturan yang telah dikurasi oleh pakar medis.
-            </p>
-            <p>
-                Aplikasi ini dibangun menggunakan <strong>Python Flask</strong> sebagai backend dan HTML5/CSS3/JavaScript
-                modern sebagai frontend, dengan penyimpanan riwayat konsultasi menggunakan <strong>SQLite</strong>.
-            </p>
-            <div class="tech-stack">
-                <span class="tech-badge python"><i class="fab fa-python"></i> Python 3.x</span>
-                <span class="tech-badge flask"><i class="fas fa-flask"></i> Flask</span>
-                <span class="tech-badge js"><i class="fab fa-js"></i> JavaScript</span>
-                <span class="tech-badge db"><i class="fas fa-database"></i> SQLite</span>
-            </div>
-        </div>
-        <div class="tentang-visual">
-            <div class="tv-icon"><i class="fas fa-brain"></i></div>
-            <div class="tv-stats">
-                <div><span>{{ total_penyakit }}</span> Penyakit</div>
-                <div><span>{{ total_gejala }}</span> Gejala</div>
-                <div><span>11</span> Aturan (Rules)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== FORWARD CHAINING EXPLANATION ===== -->
-    <div class="fc-section">
-        <h2><i class="fas fa-diagram-project"></i> Metode Forward Chaining</h2>
-        <div class="fc-diagram">
-            <div class="fc-step">
-                <div class="fc-step-icon" style="background:#3B82F6">
-                    <i class="fas fa-database"></i>
-                </div>
-                <h4>Working Memory</h4>
-                <p>Gejala yang dipilih pengguna dimasukkan sebagai fakta awal ke dalam memori kerja.</p>
-                <div class="fc-code">
-                    <code>facts = {"G01", "G03", "G05"}</code>
-                </div>
-            </div>
-            <div class="fc-arrow"><i class="fas fa-arrow-right"></i></div>
-            <div class="fc-step">
-                <div class="fc-step-icon" style="background:#8B5CF6">
-                    <i class="fas fa-gear"></i>
-                </div>
-                <h4>Rule Matching</h4>
-                <p>Mesin inferensi mengevaluasi setiap rule: apakah kondisi IF terpenuhi dalam working memory?</p>
-                <div class="fc-code">
-                    <code>IF {G01, G05, G06} ⊆ facts<br>→ THEN Influenza</code>
-                </div>
-            </div>
-            <div class="fc-arrow"><i class="fas fa-arrow-right"></i></div>
-            <div class="fc-step">
-                <div class="fc-step-icon" style="background:#10B981">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h4>Scoring</h4>
-                <p>Skor kecocokan dihitung: 60% dari gejala wajib + 40% dari gejala pendukung.</p>
-                <div class="fc-code">
-                    <code>skor = 60% + (pendukung/total × 40%)</code>
-                </div>
-            </div>
-            <div class="fc-arrow"><i class="fas fa-arrow-right"></i></div>
-            <div class="fc-step">
-                <div class="fc-step-icon" style="background:#F59E0B">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <h4>Kesimpulan</h4>
-                <p>Penyakit dengan skor ≥70% menjadi diagnosa utama. Skor 40–70% jadi kemungkinan.</p>
-                <div class="fc-code">
-                    <code>≥70% → Diagnosa Utama<br>40-70% → Kemungkinan</code>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== DAFTAR PENYAKIT DETAIL ===== -->
-    <h2 class="mt-section"><i class="fas fa-virus"></i> Basis Pengetahuan Penyakit</h2>
-    <div class="penyakit-accordion">
-        {% for pid, penyakit in daftar_penyakit.items() %}
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)" style="--dc: {{ penyakit.warna }}">
-                <div class="acc-left">
-                    <div class="acc-icon"><i class="{{ penyakit.icon }}"></i></div>
-                    <div>
-                        <h3>{{ penyakit.nama }}</h3>
-                        <span>{{ penyakit.gejala_utama | length + penyakit.gejala_pendukung | length }} gejala terdaftar</span>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-down acc-arrow"></i>
-            </div>
-            <div class="accordion-body">
-                <p class="acc-desc">{{ penyakit.deskripsi }}</p>
-                <div class="acc-detail">
-                    <div>
-                        <h5><i class="fas fa-circle-exclamation"></i> Penyebab</h5>
-                        <p>{{ penyakit.penyebab }}</p>
-                    </div>
-                    <div>
-                        <h5><i class="fas fa-check-double"></i> Gejala Utama (Wajib)</h5>
-                        <div class="gejala-id-list">
-                            {% for g in penyakit.gejala_utama %}
-                            <span class="gid-badge main">{{ g }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div>
-                        <h5><i class="fas fa-plus"></i> Gejala Pendukung</h5>
-                        <div class="gejala-id-list">
-                            {% for g in penyakit.gejala_pendukung %}
-                            <span class="gid-badge supp">{{ g }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <!-- ===== DISCLAIMER ===== -->
-    <div class="disclaimer-box">
-        <div class="db-icon"><i class="fas fa-triangle-exclamation"></i></div>
-        <div>
-            <h4>Disclaimer Penting</h4>
-            <p>
-                MediExpert adalah alat bantu informasi kesehatan yang <strong>tidak menggantikan diagnosis medis profesional</strong>.
-                Hasil diagnosa bersifat indikatif dan hanya untuk tujuan edukasi. Selalu konsultasikan dengan dokter
-                atau tenaga medis berlisensi untuk diagnosis dan penanganan yang tepat. Jangan tunda mencari pertolongan
-                medis berdasarkan hasil dari sistem ini.
+        
+        <div class="wizard-header mb-6">
+            <h1 class="mb-4">Mengenal MediExpert</h1>
+            <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Sistem pakar berbasis kecerdasan buatan untuk membantu deteksi dini gangguan pernapasan secara cepat, akurat, dan mudah digunakan oleh siapa saja.
             </p>
         </div>
-    </div>
 
+        <div class="form-card mb-6">
+            <h2 class="mb-4 text-primary">Visi Kami</h2>
+            <p style="font-size: 1.05rem; margin-bottom: 24px;">
+                Membawa akses deteksi kesehatan awal ke ujung jari Anda. Kami percaya bahwa kewaspadaan dini adalah kunci dari kesehatan yang baik. Aplikasi ini dirancang bukan untuk menggantikan dokter, tetapi untuk memberikan edukasi dan dorongan agar Anda mendapatkan penanganan medis yang tepat waktu.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 32px;">
+                <div style="padding: 24px; background-color: var(--primary-light); border-radius: var(--radius-md);">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">{{ total_penyakit }}</div>
+                    <div style="font-weight: 600;">Jenis Penyakit</div>
+                    <div class="text-muted" style="font-size: 0.9rem;">Dapat Dideteksi</div>
+                </div>
+                <div style="padding: 24px; background-color: var(--success-light); border-radius: var(--radius-md);">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--success); margin-bottom: 8px;">{{ total_gejala }}</div>
+                    <div style="font-weight: 600;">Gejala Klinis</div>
+                    <div class="text-muted" style="font-size: 0.9rem;">Tercatat di Sistem</div>
+                </div>
+                <div style="padding: 24px; background-color: var(--warning-light); border-radius: var(--radius-md);">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--warning); margin-bottom: 8px;">100%</div>
+                    <div style="font-weight: 600;">Gratis & Privat</div>
+                    <div class="text-muted" style="font-size: 0.9rem;">Tidak ada data dijual</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card mb-6">
+            <h2 class="mb-4">Daftar Penyakit</h2>
+            <p class="text-muted mb-4">Sistem kami saat ini dapat menganalisis beberapa penyakit pernapasan umum berikut:</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                {% for pid, p in daftar_penyakit.items() %}
+                <div style="padding: 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; gap: 16px; align-items: flex-start;">
+                    <div style="width: 48px; height: 48px; background-color: var(--bg-main); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; flex-shrink: 0;">
+                        <i class="{{ p.icon | default('fas fa-virus') }}"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">{{ p.nama }}</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">{{ p.deskripsi }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="disclaimer-alert" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-body);">
+            <i class="fas fa-shield-alt text-primary"></i>
+            <div>
+                <strong>Teknologi:</strong> Aplikasi ini dibangun menggunakan metode Forward Chaining (runut maju) yang memetakan kumpulan gejala yang dilaporkan pasien ke dalam basis pengetahuan (rule base) yang disusun berdasarkan referensi medis umum.
+            </div>
+        </div>
+
+    </div>
 </div>
-</section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function toggleAccordion(header) {
-    const item = header.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-}
-</script>
 {% endblock %}
