@@ -8,8 +8,9 @@ import os
 import sqlite3
 from datetime import datetime
 
+from functools import wraps
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for, session
 from supabase import create_client, Client
 
 from data_penyakit import DATA_PENYAKIT, SEMUA_GEJALA
@@ -190,6 +191,44 @@ def hapus_riwayat_by_id(item_id: int):
 
 
 # ===========================================================================
+# AUTHENTICATION
+# ===========================================================================
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login", next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if session.get("logged_in"):
+        return redirect(url_for("riwayat"))
+        
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["logged_in"] = True
+            next_url = request.args.get("next")
+            return redirect(next_url or url_for("riwayat"))
+        else:
+            error = "Username atau password salah!"
+            
+    return render_template("login.html", error=error)
+
+@app.route("/logout")
+def logout():
+    session.pop("logged_in", None)
+    return redirect(url_for("index"))
+
+
+# ===========================================================================
 # ROUTES
 # ===========================================================================
 
@@ -251,6 +290,7 @@ def diagnosa():
 
 
 @app.route("/riwayat")
+@login_required
 def riwayat():
     data_riwayat = ambil_riwayat(limit=50)
     statistik    = ambil_statistik()
@@ -258,12 +298,14 @@ def riwayat():
 
 
 @app.route("/riwayat/hapus/<int:item_id>", methods=["POST"])
+@login_required
 def hapus_riwayat(item_id: int):
     hapus_riwayat_by_id(item_id)
     return redirect(url_for("riwayat"))
 
 
 @app.route("/api/statistik")
+@login_required
 def api_statistik():
     return jsonify(ambil_statistik())
 

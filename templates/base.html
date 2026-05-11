@@ -41,9 +41,18 @@
             <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
                 <i class="fas fa-home"></i> Beranda
             </a>
+            {% if session.get('logged_in') %}
             <a href="{{ url_for('riwayat') }}" class="nav-link {% if request.endpoint == 'riwayat' %}active{% endif %}">
                 <i class="fas fa-history"></i> Riwayat
             </a>
+            <a href="{{ url_for('logout') }}" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">
+                <i class="fas fa-lock"></i> Admin
+            </a>
+            {% endif %}
             <a href="{{ url_for('tentang') }}" class="nav-link {% if request.endpoint == 'tentang' %}active{% endif %}">
                 <i class="fas fa-info-circle"></i> Tentang
             </a>
@@ -83,7 +92,11 @@
                 <h4>Navigasi</h4>
                 <ul>
                     <li><a href="{{ url_for('index') }}"><i class="fas fa-chevron-right"></i> Beranda</a></li>
+                    {% if session.get('logged_in') %}
                     <li><a href="{{ url_for('riwayat') }}"><i class="fas fa-chevron-right"></i> Riwayat Konsultasi</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('login') }}"><i class="fas fa-chevron-right"></i> Admin Login</a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('tentang') }}"><i class="fas fa-chevron-right"></i> Tentang Sistem</a></li>
                 </ul>
             </div>
