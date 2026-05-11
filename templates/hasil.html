@@ -31,10 +31,12 @@
         <div class="hasil-header-content">
             <div class="hasil-meta">
                 <h1>Hasil Diagnosa</h1>
-                <div class="hasil-info-row">
-                    <span><i class="fas fa-user"></i> {{ nama_pasien }}</span>
-                    <span><i class="fas fa-clock"></i> {{ timestamp }}</span>
-                    <span><i class="fas fa-list-check"></i> {{ hasil.total_gejala }} gejala dipilih</span>
+                <div class="hasil-info-row" style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 1.05rem; opacity: 0.9;">
+                    <span><i class="fas fa-user"></i> <strong>Nama:</strong> {{ nama_pasien }}</span>
+                    <span><i class="fas fa-calendar-alt"></i> <strong>Umur:</strong> {{ umur }} thn</span>
+                    <span><i class="fas fa-venus-mars"></i> <strong>Gender:</strong> {{ jenis_kelamin }}</span>
+                    <span><i class="fas fa-clock"></i> <strong>Waktu:</strong> {{ timestamp }}</span>
+                    <span><i class="fas fa-list-check"></i> <strong>Gejala:</strong> {{ hasil.total_gejala }} item</span>
                 </div>
             </div>
         </div>
@@ -239,17 +241,17 @@
     {% endif %}
 
     <!-- ===== ACTION BUTTONS ===== -->
-    <div class="hasil-actions">
-        <a href="{{ url_for('index') }}" class="btn btn-outline">
+    <div class="hasil-actions" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 30px;">
+        <a href="{{ url_for('index') }}" class="btn btn-outline" style="flex: 1; min-width: 200px; justify-content: center;">
             <i class="fas fa-arrow-left"></i> Diagnosa Ulang
         </a>
         {% if session.get('logged_in') %}
-        <a href="{{ url_for('riwayat') }}" class="btn btn-ghost">
+        <a href="{{ url_for('riwayat') }}" class="btn btn-ghost" style="flex: 1; min-width: 200px; justify-content: center;">
             <i class="fas fa-history"></i> Lihat Riwayat
         </a>
         {% endif %}
-        <button onclick="window.print()" class="btn btn-primary">
-            <i class="fas fa-print"></i> Cetak / Simpan PDF
+        <button onclick="window.print()" class="btn btn-primary" style="flex: 1; min-width: 200px; justify-content: center;">
+            <i class="fas fa-print"></i> Cetak Laporan (PDF)
         </button>
     </div>
 

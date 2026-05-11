@@ -18,12 +18,12 @@
                 <span>Sistem Pakar Bertenaga AI</span>
             </div>
             <h1 class="hero-title">
-                Diagnosa Penyakit <br>
-                <span class="gradient-text">Cepat & Akurat</span>
+                Deteksi Penyakit <br>
+                <span class="gradient-text">Pernapasan</span>
             </h1>
             <p class="hero-desc">
-                Sistem pakar berbasis <strong>Forward Chaining</strong> yang menganalisis gejala Anda
-                secara real-time dan memberikan diagnosa dengan tingkat kecocokan terperinci.
+                Sistem pintar yang dirancang khusus untuk menganalisis gejala pernapasan Anda
+                dan memberikan hasil diagnosa yang mudah dipahami oleh siapa saja.
             </p>
             <div class="hero-stats">
                 <div class="stat">
@@ -80,25 +80,42 @@
                 <i class="fas fa-clipboard-list"></i> Formulir Gejala
             </div>
             <h2>Pilih Gejala yang Anda Alami</h2>
-            <p>Centang semua gejala yang Anda rasakan saat ini. Semakin lengkap, semakin akurat hasil diagnosa.</p>
+            <p>Centang gejala yang Anda rasakan saat ini. Jangan ragu menekan tombol Bantuan jika bingung.</p>
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('helpModal').classList.add('show')" style="margin-top: 16px;">
+                <i class="fas fa-question-circle"></i> Bantuan Penggunaan
+            </button>
         </div>
 
         <form action="{{ url_for('diagnosa') }}" method="POST" id="formDiagnosa">
-
-            <!-- Nama Pasien -->
-            <div class="input-group-fancy">
-                <label for="namaPasien">Nama Pasien</label>
-                <div class="input-icon"><i class="fas fa-user-injured"></i></div>
-                <input
-                    type="text"
-                    name="nama_pasien"
-                    id="namaPasien"
-                    placeholder="Nama Anda (opsional)"
-                    class="input-fancy"
-                    value="{{ request.form.get('nama_pasien', '') }}"
-                    maxlength="80"
-                    autocomplete="name"
-                >
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 24px;">
+                <!-- Nama Pasien -->
+                <div class="input-group-fancy" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                    <label for="namaPasien">Nama Anda</label>
+                    <div style="position:relative;">
+                        <div class="input-icon"><i class="fas fa-user"></i></div>
+                        <input type="text" name="nama_pasien" id="namaPasien" placeholder="Cth: Budi (Opsional)" class="input-fancy" value="{{ request.form.get('nama_pasien', '') }}" maxlength="80">
+                    </div>
+                </div>
+                <!-- Umur -->
+                <div class="input-group-fancy" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                    <label for="umur">Umur (Tahun)</label>
+                    <div style="position:relative;">
+                        <div class="input-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <input type="number" name="umur" id="umur" placeholder="Cth: 35" class="input-fancy" min="12" max="100" value="{{ request.form.get('umur', '') }}" required>
+                    </div>
+                </div>
+                <!-- Jenis Kelamin -->
+                <div class="input-group-fancy" style="flex: 1; min-width: 180px; margin-bottom: 0;">
+                    <label for="jenis_kelamin">Jenis Kelamin</label>
+                    <div style="position:relative;">
+                        <div class="input-icon"><i class="fas fa-venus-mars"></i></div>
+                        <select name="jenis_kelamin" id="jenis_kelamin" class="input-fancy" style="appearance: none; cursor: pointer;" required>
+                            <option value="">Pilih...</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- Progress & Counter -->
@@ -150,7 +167,6 @@
                                 <i class="fas fa-check"></i>
                             </div>
                             <span class="gejala-text">{{ g.nama }}</span>
-                            <span class="gejala-id">{{ g.id }}</span>
                         </label>
                         {% endfor %}
                     </div>
@@ -236,5 +252,27 @@
         </div>
     </div>
 </section>
+
+<!-- Modal Bantuan -->
+<div id="helpModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-info-circle"></i> Cara Menggunakan Sistem</h3>
+            <button type="button" onclick="document.getElementById('helpModal').classList.remove('show')" class="btn-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p>Selamat datang! Sistem ini dirancang untuk mempermudah Anda mengetahui kemungkinan penyakit pernapasan. Ikuti langkah ini:</p>
+            <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li><strong>Isi Data Diri:</strong> Masukkan nama, umur, dan jenis kelamin Anda di kolom paling atas.</li>
+                <li><strong>Pilih Gejala:</strong> Baca daftar gejala yang ada. Sentuh/klik kotak pada gejala yang sedang Anda rasakan (minimal 3 gejala).</li>
+                <li><strong>Diagnosa:</strong> Setelah selesai, gulir ke bawah dan tekan tombol <strong>"Proses Diagnosa Sekarang"</strong>.</li>
+                <li><strong>Lihat Hasil:</strong> Sistem akan menampilkan hasil dan saran yang mudah dipahami.</li>
+            </ol>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('helpModal').classList.remove('show')" style="width: 100%; justify-content: center;">Saya Mengerti</button>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

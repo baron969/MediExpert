@@ -53,6 +53,8 @@ def init_sqlite():
         CREATE TABLE IF NOT EXISTS riwayat_konsultasi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nama_pasien TEXT NOT NULL DEFAULT 'Anonim',
+            umur INTEGER DEFAULT 0,
+            jenis_kelamin TEXT DEFAULT 'Tidak diketahui',
             gejala TEXT NOT NULL,
             diagnosa TEXT,
             skor REAL DEFAULT 0,
@@ -69,10 +71,12 @@ except Exception as e:
     print(f"[WARNING] Tidak bisa inisialisasi SQLite (mungkin read-only): {e}")
 
 
-def simpan_riwayat(nama_pasien: str, gejala_ids: list, diagnosa: str, skor: float):
+def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: list, diagnosa: str, skor: float):
     """Simpan ke Supabase; fallback ke SQLite jika gagal."""
     data = {
         "nama_pasien": nama_pasien,
+        "umur": umur,
+        "jenis_kelamin": jenis_kelamin,
         "gejala": json.dumps(gejala_ids),
         "diagnosa": diagnosa,
         "skor": round(skor, 2),
@@ -89,8 +93,8 @@ def simpan_riwayat(nama_pasien: str, gejala_ids: list, diagnosa: str, skor: floa
     try:
         conn = sqlite3.connect(DB_PATH)
         conn.execute(
-            "INSERT INTO riwayat_konsultasi (nama_pasien,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?)",
-            (data["nama_pasien"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
+            "INSERT INTO riwayat_konsultasi (nama_pasien,umur,jenis_kelamin,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?,?,?)",
+            (data["nama_pasien"], data["umur"], data["jenis_kelamin"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
         )
         conn.commit()
         conn.close()
@@ -247,6 +251,8 @@ def index():
 @app.route("/diagnosa", methods=["POST"])
 def diagnosa():
     nama_pasien    = request.form.get("nama_pasien", "Anonim").strip() or "Anonim"
+    umur           = int(request.form.get("umur", 0) or 0)
+    jenis_kelamin  = request.form.get("jenis_kelamin", "Tidak diketahui").strip()
     gejala_dipilih = request.form.getlist("gejala")
 
     if not gejala_dipilih:
@@ -279,12 +285,14 @@ def diagnosa():
         nama_diagnosa = f"Kemungkinan: {hasil['kemungkinan_lain'][0]['nama']}"
         skor_diagnosa = hasil["kemungkinan_lain"][0]["skor"]
 
-    simpan_riwayat(nama_pasien, gejala_dipilih, nama_diagnosa, skor_diagnosa)
+    simpan_riwayat(nama_pasien, umur, jenis_kelamin, gejala_dipilih, nama_diagnosa, skor_diagnosa)
 
     return render_template(
         "hasil.html",
         hasil=hasil,
         nama_pasien=nama_pasien,
+        umur=umur,
+        jenis_kelamin=jenis_kelamin,
         timestamp=datetime.now().strftime("%d %B %Y, %H:%M"),
     )
 

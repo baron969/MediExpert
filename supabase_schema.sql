@@ -7,6 +7,8 @@
 CREATE TABLE IF NOT EXISTS riwayat_konsultasi (
     id          BIGSERIAL PRIMARY KEY,
     nama_pasien TEXT      NOT NULL DEFAULT 'Anonim',
+    umur        INTEGER   DEFAULT 0,
+    jenis_kelamin TEXT    DEFAULT 'Tidak diketahui',
     gejala      TEXT      NOT NULL,
     diagnosa    TEXT,
     skor        REAL      DEFAULT 0,
