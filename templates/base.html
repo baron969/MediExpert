@@ -14,62 +14,137 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Tailwind CSS (via CDN for simplicity & portability) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Essential Custom CSS for animations and custom components not easily done with utility classes */
+        html { scroll-behavior: smooth; }
+        body { @apply bg-slate-50 text-slate-700 antialiased; }
+        
+        /* Hide scrollbar for clean horizontal scrolls */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Wizard Animations */
+        .wizard-step { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .wizard-step.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Custom Checkbox Card */
+        .gejala-checkbox:checked + div {
+            @apply border-brand-500 bg-brand-50;
+        }
+        .gejala-checkbox:checked + div .check-icon {
+            @apply bg-brand-500 border-brand-500 text-white;
+        }
+
+        /* Floating Bar Animation */
+        #floatingBar { transform: translateY(100%); transition: transform 0.3s ease-out; }
+        #floatingBar.visible { transform: translateY(0); }
+    </style>
 
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
 <!-- Navbar -->
-<nav class="navbar">
-    <div class="container-large">
-        <a href="{{ url_for('index') }}" class="navbar-brand">
-            <div class="brand-icon">
-                <i class="fas fa-lungs"></i>
-            </div>
-            <div class="brand-text">
-                <h4>MediExpert</h4>
-                <span>Pernapasan Sehat</span>
-            </div>
-        </a>
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <a href="{{ url_for('index') }}" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl group-hover:bg-brand-100 transition-colors">
+                    <i class="fas fa-lungs"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-lg leading-tight tracking-tight">MediExpert</h1>
+                    <span class="text-xs text-slate-500 font-medium">Pernapasan Sehat</span>
+                </div>
+            </a>
 
-        <div class="navbar-menu">
-            <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Cek Gejala</a>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-2">
+                <a href="{{ url_for('index') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'index' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Cek Gejala</a>
+                <a href="{{ url_for('tentang') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'tentang' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Tentang Sistem</a>
+                
+                {% if session.get('logged_in') %}
+                <div class="h-6 w-px bg-slate-200 mx-2"></div>
+                <a href="{{ url_for('riwayat') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'riwayat' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-full transition-colors">Keluar</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobileMenuBtn" class="text-slate-500 hover:text-slate-900 focus:outline-none p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu Panel (Hidden by default) -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white absolute w-full shadow-lg">
+        <div class="px-4 pt-2 pb-4 space-y-1">
+            <a href="{{ url_for('index') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'index' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Cek Gejala</a>
+            <a href="{{ url_for('tentang') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'tentang' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Tentang Sistem</a>
             {% if session.get('logged_in') %}
-            <a href="{{ url_for('riwayat') }}" class="nav-link {% if request.endpoint == 'riwayat' %}active{% endif %}">Riwayat Pasien</a>
-            <a href="{{ url_for('logout') }}" class="nav-link">Keluar</a>
+            <a href="{{ url_for('riwayat') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'riwayat' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Dashboard Admin</a>
+            <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
             {% endif %}
-            <a href="{{ url_for('tentang') }}" class="nav-link {% if request.endpoint == 'tentang' %}active{% endif %}">Tentang</a>
         </div>
     </div>
 </nav>
 
 <!-- Main Content -->
-<main>
+<main class="flex-grow flex flex-col">
     {% block content %}{% endblock %}
 </main>
 
 <!-- Footer -->
-<footer class="footer">
-    <div class="container-large">
-        <div class="footer-content">
-            <div class="brand-icon" style="background-color: var(--bg-main); color: var(--text-muted);">
-                <i class="fas fa-heartbeat"></i>
-            </div>
-            <p class="footer-text">
-                <strong>MediExpert</strong> — Sistem deteksi dini gangguan pernapasan.<br>
-                Aplikasi ini hanya untuk tujuan informasi awal, bukan pengganti diagnosis medis dari dokter profesional.
-            </p>
-            <p class="footer-text" style="font-size: 0.8rem;">
-                &copy; 2024 MediExpert. All rights reserved.
-            </p>
+<footer class="bg-white border-t border-slate-200 mt-auto py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+        <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+            <i class="fas fa-heartbeat"></i>
         </div>
+        <p class="text-sm text-slate-500 max-w-md">
+            <strong>MediExpert</strong> — Sistem deteksi dini gangguan pernapasan. <br>
+            Aplikasi ini hanya untuk tujuan informasi awal, bukan pengganti diagnosis medis dari dokter profesional.
+        </p>
+        <p class="text-xs text-slate-400 mt-4">
+            &copy; 2024 MediExpert. All rights reserved.
+        </p>
     </div>
 </footer>
 
-<!-- Scripts -->
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+    // Mobile Menu Toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+    });
+</script>
+
 {% block extra_scripts %}{% endblock %}
 
 </body>

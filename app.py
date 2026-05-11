@@ -274,7 +274,7 @@ def diagnosa():
             gejala_terpilih=gejala_dipilih,
         )
 
-    hasil = forward_chaining(gejala_dipilih)
+    hasil = forward_chaining(gejala_dipilih, umur, jenis_kelamin)
 
     nama_diagnosa = "Tidak Terdiagnosa"
     skor_diagnosa = 0.0
