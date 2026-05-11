@@ -3,193 +3,197 @@
 {% block title %}Cek Gejala Pernapasan — MediExpert{% endblock %}
 
 {% block content %}
-<div class="py-12 md:py-20 px-4 flex-grow bg-slate-50">
-    <div class="max-w-3xl mx-auto">
-        
-        <!-- Headers -->
-        <div class="text-center mb-10 md:mb-16">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 text-brand-600 font-semibold text-sm mb-4">
-                <i class="fas fa-stethoscope"></i> Deteksi Dini Cerdas
-            </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">Cek Kesehatan Pernapasan Anda</h1>
-            <p class="text-slate-500 text-base md:text-lg">Ketahui kemungkinan penyebab keluhan pernapasan Anda dalam hitungan menit berdasarkan analisis cerdas.</p>
+<!-- HERO SECTION -->
+<div class="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+    <div class="absolute top-0 left-0 -ml-20 mt-32 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+
+    <div class="max-w-4xl mx-auto px-4 relative z-10 text-center" data-aos="fade-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-brand-100 text-brand-700 font-bold text-sm mb-6 shadow-sm">
+            <i class="fas fa-robot text-brand-500"></i> AI Diagnostic System 2.0
         </div>
+        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
+            Kenali Kondisi Pernapasan Anda Secara <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-600">Cerdas</span>
+        </h1>
+        <p class="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            Hanya butuh 2 menit. Pilih gejala yang Anda rasakan, dan biarkan sistem pakar kami menganalisis kemungkinan penyakit serta tindakan yang harus Anda ambil.
+        </p>
+        <a href="#form-diagnosa" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 hover:bg-brand-600 text-white font-bold rounded-2xl shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            Mulai Analisis <i class="fas fa-arrow-down text-sm animate-bounce"></i>
+        </a>
+    </div>
+</div>
+
+<!-- DIAGNOSIS FORM SECTION -->
+<div id="form-diagnosa" class="pb-32 px-4 scroll-mt-24 relative z-10">
+    <div class="max-w-4xl mx-auto">
 
         {% if error %}
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl p-4 mb-8 flex items-start gap-3">
-            <i class="fas fa-exclamation-circle text-rose-600 mt-0.5 text-lg"></i>
+        <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-xl p-5 mb-8 flex gap-4 shadow-sm" data-aos="shake">
+            <i class="fas fa-exclamation-triangle text-rose-500 text-xl mt-0.5"></i>
             <div>
-                <strong class="font-semibold block">Perhatian!</strong>
-                <span class="text-sm">{{ error }}</span>
+                <strong class="font-bold block text-lg mb-1">Perhatian</strong>
+                <span class="text-sm opacity-90">{{ error }}</span>
             </div>
         </div>
         {% endif %}
 
         <form action="{{ url_for('diagnosa') }}" method="POST" id="diagnosaForm">
             
-            <!-- STEP 1: Profil Pasien -->
-            <div class="wizard-step active" id="step1">
-                <div class="bg-white rounded-3xl p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
-                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold">1</div>
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Informasi Dasar</h3>
-                            <p class="text-sm text-slate-500">Membantu AI menyesuaikan analisis risiko</p>
+            <!-- Profil Card -->
+            <div class="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white mb-8" data-aos="fade-up">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-display text-2xl font-bold text-slate-900">Profil Pasien</h2>
+                        <p class="text-sm text-slate-500">Membantu AI menyesuaikan faktor risiko medis</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-3">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Nama Panggilan (Opsional)</label>
+                        <input type="text" name="nama_pasien" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800" placeholder="Ketik nama Anda..." value="{{ request.form.get('nama_pasien', '') }}">
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Umur <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="number" name="umur" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800 pr-12" placeholder="Cth: 25" min="12" max="100" required value="{{ request.form.get('umur', '') }}">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">Thn</span>
                         </div>
                     </div>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <label for="namaPasien" class="block text-sm font-semibold text-slate-700 mb-2">Nama Panggilan (Opsional)</label>
-                            <input type="text" id="namaPasien" name="nama_pasien" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all outline-none text-slate-700 placeholder-slate-400" placeholder="Cth: Budi" value="{{ request.form.get('nama_pasien', '') }}">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Jenis Kelamin <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="jenis_kelamin" value="Laki-laki" class="peer sr-only" required {% if request.form.get('jenis_kelamin') == 'Laki-laki' %}checked{% endif %}>
+                                <div class="px-4 py-3.5 bg-slate-50 rounded-xl text-center font-semibold text-slate-500 peer-checked:bg-brand-500 peer-checked:text-white shadow-inner peer-checked:shadow-md transition-all">Laki-laki</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="jenis_kelamin" value="Perempuan" class="peer sr-only" required {% if request.form.get('jenis_kelamin') == 'Perempuan' %}checked{% endif %}>
+                                <div class="px-4 py-3.5 bg-slate-50 rounded-xl text-center font-semibold text-slate-500 peer-checked:bg-rose-400 peer-checked:text-white shadow-inner peer-checked:shadow-md transition-all">Perempuan</div>
+                            </label>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="umur" class="block text-sm font-semibold text-slate-700 mb-2">Umur (Tahun) <span class="text-rose-500">*</span></label>
-                                <input type="number" id="umur" name="umur" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all outline-none text-slate-700" placeholder="Cth: 28" min="12" max="100" required value="{{ request.form.get('umur', '') }}">
-                            </div>
-                            <div>
-                                <label for="jenis_kelamin" class="block text-sm font-semibold text-slate-700 mb-2">Jenis Kelamin <span class="text-rose-500">*</span></label>
-                                <select id="jenis_kelamin" name="jenis_kelamin" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all outline-none text-slate-700 appearance-none" required>
-                                    <option value="" disabled selected>Pilih...</option>
-                                    <option value="Laki-laki">Laki-laki</option>
-                                    <option value="Perempuan">Perempuan</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-10 text-right">
-                        <button type="button" class="w-full md:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2" onclick="nextStep(2)">
-                            Pilih Keluhan <i class="fas fa-arrow-right"></i>
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 2: Gejala -->
-            <div class="wizard-step" id="step2">
-                <button type="button" class="mb-6 text-slate-500 hover:text-slate-800 font-medium flex items-center gap-2 transition-colors" onclick="prevStep(1)">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Data Diri
-                </button>
-
-                <div class="bg-white rounded-3xl p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 mb-24">
-                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
-                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-xl font-bold">2</div>
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Apa yang Anda rasakan?</h3>
-                            <p class="text-sm text-slate-500">Pilih minimal 3 gejala yang paling mendeskripsikan kondisi Anda.</p>
-                        </div>
+            <!-- Gejala Card -->
+            <div class="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white" data-aos="fade-up" data-aos-delay="100">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
+                    <div>
+                        <h2 class="font-display text-2xl font-bold text-slate-900">Keluhan yang Dirasakan</h2>
+                        <p class="text-sm text-slate-500">Pilih minimal 3 gejala yang paling sesuai.</p>
+                    </div>
+                </div>
 
+                <div class="space-y-12">
                     {% for kat in kategori_gejala %}
-                    <div class="mb-10 last:mb-0">
-                        <h4 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-notes-medical text-brand-500"></i> {{ kat.kategori }}
-                        </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-sm"><i class="fas fa-hashtag"></i></span>
+                            {{ kat.kategori }}
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {% for g in kat.gejala %}
-                            <label class="relative cursor-pointer group">
+                            <label class="relative cursor-pointer group block h-full">
                                 <input type="checkbox" name="gejala" value="{{ g.id }}" class="gejala-checkbox peer absolute opacity-0 w-0 h-0" onchange="updateGejalaCount()" {% if g.id in (gejala_terpilih or []) %}checked{% endif %}>
-                                <div class="flex items-center gap-4 p-4 rounded-2xl border-2 border-slate-100 bg-white hover:bg-slate-50 transition-all peer-focus:ring-4 peer-focus:ring-brand-50 select-none">
-                                    <div class="check-icon w-6 h-6 rounded-full border-2 border-slate-200 text-transparent flex items-center justify-center text-xs transition-colors shrink-0">
+                                <div class="gejala-card-hover flex items-start gap-4 p-4 rounded-2xl border-2 border-slate-100 bg-white h-full">
+                                    <div class="check-icon w-6 h-6 rounded-full border-2 border-slate-200 text-transparent flex items-center justify-center text-xs shrink-0 mt-0.5 transition-all">
                                         <i class="fas fa-check"></i>
                                     </div>
-                                    <span class="font-medium text-slate-700 text-sm leading-snug">{{ g.nama }}</span>
+                                    <span class="font-semibold text-slate-700 text-sm leading-relaxed pt-0.5">{{ g.nama }}</span>
                                 </div>
                             </label>
                             {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
-
                 </div>
             </div>
 
-            <!-- Floating Action Bar for Step 2 -->
-            <div class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 p-4 z-40" id="floatingBar">
-                <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
-                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-xl font-extrabold text-brand-600" id="gejalaCount">0</div>
+            <!-- Floating Action Bar -->
+            <div class="fixed bottom-0 left-0 right-0 z-50 p-4 pointer-events-none floating-bar" id="floatingBar">
+                <div class="max-w-3xl mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-3xl p-4 shadow-2xl pointer-events-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    
+                    <div class="flex items-center gap-4 w-full sm:w-auto px-2">
+                        <div class="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-xl font-black text-white shadow-inner" id="gejalaCount">0</div>
                         <div>
-                            <div class="text-sm font-bold text-slate-800">Gejala Terpilih</div>
-                            <div class="text-xs text-slate-500" id="gejalaText">Pilih minimal 3 gejala lagi</div>
+                            <div class="text-sm font-bold text-white tracking-wide">Gejala Terpilih</div>
+                            <div class="text-xs text-slate-400" id="gejalaText">Pilih 3 gejala</div>
                         </div>
                     </div>
-                    <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2" id="btnSubmit" disabled>
-                        Analisis Sekarang <i class="fas fa-microchip"></i>
+                    
+                    <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-brand-500 hover:bg-brand-400 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2" id="btnSubmit" disabled>
+                        Mulai Analisis AI <i class="fas fa-magic"></i>
                     </button>
+                    
                 </div>
             </div>
 
         </form>
     </div>
 </div>
+
+<style>
+    /* Add smooth blob animation for hero background */
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+</style>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-    function nextStep(stepNum) {
-        if (stepNum === 2) {
-            const umur = document.getElementById('umur').value;
-            const jk = document.getElementById('jenis_kelamin').value;
-            if (!umur || !jk) {
-                alert("Mohon isi Umur dan Jenis Kelamin terlebih dahulu.");
-                return;
-            }
-            document.getElementById('floatingBar').classList.add('visible');
-        }
-
-        document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
-        document.getElementById('step' + stepNum).classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        updateGejalaCount(); // refresh state
-    }
-
-    function prevStep(stepNum) {
-        if (stepNum === 1) {
-            document.getElementById('floatingBar').classList.remove('visible');
-        }
-        document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
-        document.getElementById('step' + stepNum).classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
     function updateGejalaCount() {
         const checkedCount = document.querySelectorAll('.gejala-checkbox:checked').length;
         const countEl = document.getElementById('gejalaCount');
         const textEl = document.getElementById('gejalaText');
         const btnSubmit = document.getElementById('btnSubmit');
+        const floatBar = document.getElementById('floatingBar');
 
         if (countEl) countEl.textContent = checkedCount;
 
+        // Show floating bar if at least 1 symptom is checked
+        if (checkedCount > 0) {
+            floatBar.classList.add('show');
+        } else {
+            floatBar.classList.remove('show');
+        }
+
         if (checkedCount < 3) {
             if (btnSubmit) btnSubmit.disabled = true;
-            if (textEl) textEl.innerHTML = `Pilih minimal ${3 - checkedCount} lagi`;
+            if (textEl) textEl.innerHTML = `Kurang ${3 - checkedCount} gejala lagi`;
         } else {
             if (btnSubmit) btnSubmit.disabled = false;
-            if (textEl) textEl.innerHTML = `<span class="text-emerald-600 font-semibold">Siap dianalisis!</span>`;
+            if (textEl) textEl.innerHTML = `<span class="text-brand-300 font-bold">Siap dianalisis!</span>`;
         }
     }
 
-    // Initialize if pre-filled
     document.addEventListener('DOMContentLoaded', () => {
-        if (document.querySelectorAll('.gejala-checkbox:checked').length > 0) {
-            updateGejalaCount();
-        }
-        // Also check if we should show floating bar (e.g. error redirect)
-        if (document.getElementById('step2') && document.getElementById('step2').classList.contains('active')) {
-             document.getElementById('floatingBar').classList.add('visible');
-        }
+        updateGejalaCount();
     });
 
-    // Form submission loading state
     document.getElementById('diagnosaForm').addEventListener('submit', function(e) {
         const btn = document.getElementById('btnSubmit');
         if(!btn.disabled) {
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
-            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sedang memproses...';
+            btn.classList.add('opacity-80');
         }
     });
 </script>

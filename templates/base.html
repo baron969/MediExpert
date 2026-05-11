@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MediExpert - Cek Gejala Penyakit Pernapasan Anda secara online dengan mudah dan cepat.">
+    <meta name="description" content="MediExpert - Asisten AI Pribadi untuk Kesehatan Pernapasan Anda.">
     <title>{% block title %}MediExpert — Cek Kesehatan Pernapasan{% endblock %}</title>
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Inter & Outfit (for headings) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- Tailwind CSS (via CDN for simplicity & portability) -->
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,15 +25,21 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
                     },
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
                         }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(14, 165, 233, 0.05)',
+                        'soft': '0 20px 40px -15px rgba(0,0,0,0.05)',
                     }
                 }
             }
@@ -38,116 +47,167 @@
     </script>
 
     <style>
-        /* Essential Custom CSS for animations and custom components not easily done with utility classes */
-        html { scroll-behavior: smooth; }
-        body { @apply bg-slate-50 text-slate-700 antialiased; }
-        
-        /* Hide scrollbar for clean horizontal scrolls */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { 
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            color: #334155;
+            min-height: 100vh;
+        }
 
-        /* Wizard Animations */
-        .wizard-step { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
-        .wizard-step.active { display: block; opacity: 1; transform: translateY(0); }
+        /* Glassmorphism Navbar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-        /* Custom Checkbox Card */
+        /* Custom Checkbox Interaction */
         .gejala-checkbox:checked + div {
-            border-color: #3b82f6 !important;
-            background-color: #eff6ff !important;
+            border-color: #0ea5e9 !important;
+            background-color: #f0f9ff !important;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15) !important;
+            transform: translateY(-2px);
         }
         .gejala-checkbox:checked + div .check-icon {
-            background-color: #3b82f6 !important;
-            border-color: #3b82f6 !important;
+            background-color: #0ea5e9 !important;
+            border-color: #0ea5e9 !important;
             color: white !important;
+            transform: scale(1.1);
+        }
+        
+        .gejala-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gejala-card-hover:hover {
+            border-color: #bae6fd;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.1);
         }
 
-        /* Floating Bar Animation */
-        #floatingBar { transform: translateY(100%); transition: transform 0.3s ease-out; }
-        #floatingBar.visible { transform: translateY(0); }
+        /* Hide Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Floating Action Bar */
+        .floating-bar {
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .floating-bar.show {
+            transform: translateY(0);
+        }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col relative overflow-x-hidden">
 
 <!-- Navbar -->
-<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
+<nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
             <!-- Logo -->
             <a href="{{ url_for('index') }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl group-hover:bg-brand-100 transition-colors">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white flex items-center justify-center text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
                     <i class="fas fa-lungs"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-slate-900 text-lg leading-tight tracking-tight">MediExpert</h1>
-                    <span class="text-xs text-slate-500 font-medium">Pernapasan Sehat</span>
+                    <h1 class="font-display font-bold text-slate-900 text-xl tracking-tight">MediExpert</h1>
+                    <span class="text-xs text-brand-600 font-semibold tracking-wider uppercase">AI Health</span>
                 </div>
             </a>
 
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center gap-2">
-                <a href="{{ url_for('index') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'index' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Cek Gejala</a>
-                <a href="{{ url_for('tentang') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'tentang' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Tentang Sistem</a>
+            <div class="hidden md:flex items-center gap-1 bg-white/50 p-1.5 rounded-full border border-white">
+                <a href="{{ url_for('index') }}" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'index' %}bg-white text-brand-600 shadow-sm{% else %}text-slate-600 hover:text-brand-600{% endif %} transition-all">Mulai Diagnosa</a>
+                <a href="{{ url_for('tentang') }}" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'tentang' %}bg-white text-brand-600 shadow-sm{% else %}text-slate-600 hover:text-brand-600{% endif %} transition-all">Info Medis</a>
                 
                 {% if session.get('logged_in') %}
-                <div class="h-6 w-px bg-slate-200 mx-2"></div>
-                <a href="{{ url_for('riwayat') }}" class="px-4 py-2 text-sm font-medium rounded-full {% if request.endpoint == 'riwayat' %}bg-slate-100 text-brand-600{% else %}text-slate-600 hover:bg-slate-50 hover:text-brand-600{% endif %} transition-colors">Dashboard</a>
-                <a href="{{ url_for('logout') }}" class="px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-full transition-colors">Keluar</a>
+                <div class="w-px h-5 bg-slate-300 mx-2"></div>
+                <a href="{{ url_for('riwayat') }}" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'riwayat' %}bg-slate-800 text-white shadow-sm{% else %}text-slate-700 hover:bg-slate-100{% endif %} transition-all">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="px-5 py-2 text-sm font-bold text-rose-500 hover:bg-rose-50 rounded-full transition-all">Keluar</a>
                 {% endif %}
             </div>
 
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Toggle -->
             <div class="md:hidden">
-                <button id="mobileMenuBtn" class="text-slate-500 hover:text-slate-900 focus:outline-none p-2">
-                    <i class="fas fa-bars text-xl"></i>
+                <button id="mobileMenuBtn" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-600 shadow-sm border border-slate-100">
+                    <i class="fas fa-bars"></i>
                 </button>
             </div>
         </div>
     </div>
     
-    <!-- Mobile Menu Panel (Hidden by default) -->
-    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 bg-white absolute w-full shadow-lg">
-        <div class="px-4 pt-2 pb-4 space-y-1">
-            <a href="{{ url_for('index') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'index' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Cek Gejala</a>
-            <a href="{{ url_for('tentang') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'tentang' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Tentang Sistem</a>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-slate-100 absolute w-full shadow-xl">
+        <div class="px-4 py-4 space-y-2">
+            <a href="{{ url_for('index') }}" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'index' %}bg-brand-50 text-brand-600{% else %}text-slate-600 hover:bg-slate-50{% endif %}">Mulai Diagnosa</a>
+            <a href="{{ url_for('tentang') }}" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'tentang' %}bg-brand-50 text-brand-600{% else %}text-slate-600 hover:bg-slate-50{% endif %}">Info Medis</a>
             {% if session.get('logged_in') %}
-            <a href="{{ url_for('riwayat') }}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.endpoint == 'riwayat' %}bg-brand-50 text-brand-600{% else %}text-slate-700 hover:bg-slate-50 hover:text-brand-600{% endif %}">Dashboard Admin</a>
-            <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-rose-600 hover:bg-rose-50">Keluar</a>
+            <a href="{{ url_for('riwayat') }}" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'riwayat' %}bg-slate-800 text-white{% else %}text-slate-600 hover:bg-slate-50{% endif %}">Dashboard Admin</a>
+            <a href="{{ url_for('logout') }}" class="block px-4 py-3 rounded-xl font-bold text-rose-500 hover:bg-rose-50">Keluar</a>
             {% endif %}
         </div>
     </div>
 </nav>
 
+<!-- Spacer for fixed nav -->
+<div class="h-20"></div>
+
 <!-- Main Content -->
-<main class="flex-grow flex flex-col">
+<main class="flex-grow flex flex-col relative">
     {% block content %}{% endblock %}
 </main>
 
 <!-- Footer -->
-<footer class="bg-white border-t border-slate-200 mt-auto py-8">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-        <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
-            <i class="fas fa-heartbeat"></i>
+<footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-slate-800 text-brand-400 flex items-center justify-center">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h4 class="font-display font-bold text-white text-lg">MediExpert</h4>
+                <p class="text-xs">Sistem Pakar AI Pernapasan</p>
+            </div>
         </div>
-        <p class="text-sm text-slate-500 max-w-md">
-            <strong>MediExpert</strong> — Sistem deteksi dini gangguan pernapasan. <br>
-            Aplikasi ini hanya untuk tujuan informasi awal, bukan pengganti diagnosis medis dari dokter profesional.
-        </p>
-        <p class="text-xs text-slate-400 mt-4">
-            &copy; 2024 MediExpert. All rights reserved.
-        </p>
+        <div class="text-center md:text-right max-w-sm">
+            <p class="text-xs leading-relaxed opacity-70">
+                Aplikasi ini dirancang untuk deteksi awal dan edukasi. Bukan pengganti diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.
+            </p>
+            <p class="text-xs mt-3 opacity-50">&copy; 2024 MediExpert. All rights reserved.</p>
+        </div>
     </div>
 </footer>
 
+<!-- Scripts -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    // Mobile Menu Toggle
+    // Initialize Animations
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 50,
+        easing: 'ease-out-cubic',
+    });
+
+    // Mobile Menu
     document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-        const menu = document.getElementById('mobileMenu');
-        menu.classList.toggle('hidden');
+        document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 10) {
+            nav.classList.add('shadow-sm');
+        } else {
+            nav.classList.remove('shadow-sm');
+        }
     });
 </script>
-
 {% block extra_scripts %}{% endblock %}
 
 </body>
