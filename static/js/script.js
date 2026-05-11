@@ -1,4 +1,4 @@
-﻿/**
+/**
  * script.js
  * MediExpert - Sistem Pakar Diagnosa Penyakit
  * JavaScript utama untuk interaktivitas UI
@@ -93,18 +93,6 @@ checkboxes.forEach(cb => {
     });
 });
 
-// Klik pada label gejala item → toggle checkbox
-document.querySelectorAll('.gejala-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-        // Hindari double-fire jika klik langsung di checkbox
-        if (e.target.type === 'checkbox') return;
-        const cb = item.querySelector('.gejala-cb');
-        if (cb) {
-            cb.checked = !cb.checked;
-            cb.dispatchEvent(new Event('change'));
-        }
-    });
-});
 
 // Tombol "Pilih Semua" per kategori
 document.querySelectorAll('.btn-pilih-semua').forEach(btn => {
