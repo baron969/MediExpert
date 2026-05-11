@@ -62,7 +62,10 @@ def init_sqlite():
     conn.close()
 
 
-init_sqlite()
+try:
+    init_sqlite()
+except Exception as e:
+    print(f"[WARNING] Tidak bisa inisialisasi SQLite (mungkin read-only): {e}")
 
 
 def simpan_riwayat(nama_pasien: str, gejala_ids: list, diagnosa: str, skor: float):
@@ -82,13 +85,16 @@ def simpan_riwayat(nama_pasien: str, gejala_ids: list, diagnosa: str, skor: floa
     except Exception as e:
         print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
     # Fallback SQLite
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        "INSERT INTO riwayat_konsultasi (nama_pasien,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?)",
-        (data["nama_pasien"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
-    )
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute(
+            "INSERT INTO riwayat_konsultasi (nama_pasien,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?)",
+            (data["nama_pasien"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[ERROR] SQLite simpan gagal: {e}")
 
 
 def ambil_riwayat(limit: int = 50) -> list:
@@ -114,19 +120,22 @@ def ambil_riwayat(limit: int = 50) -> list:
     except Exception as e:
         print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
     # Fallback SQLite
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    rows = conn.execute("SELECT * FROM riwayat_konsultasi ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
-    conn.close()
     hasil = []
-    for row in rows:
-        item = dict(row)
-        try:
-            gejala_ids = json.loads(item.get("gejala", "[]"))
-            item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
-        except Exception:
-            item["gejala_nama"] = []
-        hasil.append(item)
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT * FROM riwayat_konsultasi ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        conn.close()
+        for row in rows:
+            item = dict(row)
+            try:
+                gejala_ids = json.loads(item.get("gejala", "[]"))
+                item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
+            except Exception:
+                item["gejala_nama"] = []
+            hasil.append(item)
+    except Exception as e:
+        print(f"[ERROR] SQLite ambil riwayat gagal: {e}")
     return hasil
 
 
@@ -146,15 +155,19 @@ def ambil_statistik() -> dict:
     except Exception as e:
         print(f"[WARNING] Supabase statistik gagal, fallback SQLite: {e}")
     # Fallback SQLite
-    conn = sqlite3.connect(DB_PATH)
-    rows = conn.execute("SELECT diagnosa, COUNT(*) FROM riwayat_konsultasi GROUP BY diagnosa ORDER BY 2 DESC").fetchall()
-    total = sum(r[1] for r in rows)
-    conn.close()
-    return {
-        "labels": [r[0] or "Tidak Terdiagnosa" for r in rows],
-        "data": [r[1] for r in rows],
-        "total": total,
-    }
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        rows = conn.execute("SELECT diagnosa, COUNT(*) FROM riwayat_konsultasi GROUP BY diagnosa ORDER BY 2 DESC").fetchall()
+        total = sum(r[1] for r in rows)
+        conn.close()
+        return {
+            "labels": [r[0] or "Tidak Terdiagnosa" for r in rows],
+            "data": [r[1] for r in rows],
+            "total": total,
+        }
+    except Exception as e:
+        print(f"[ERROR] SQLite ambil statistik gagal: {e}")
+        return {"labels": [], "data": [], "total": 0}
 
 
 def hapus_riwayat_by_id(item_id: int):
@@ -167,10 +180,13 @@ def hapus_riwayat_by_id(item_id: int):
     except Exception as e:
         print(f"[WARNING] Supabase hapus gagal, fallback SQLite: {e}")
     # Fallback SQLite
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("DELETE FROM riwayat_konsultasi WHERE id = ?", (item_id,))
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute("DELETE FROM riwayat_konsultasi WHERE id = ?", (item_id,))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[ERROR] SQLite hapus gagal: {e}")
 
 
 # ===========================================================================
