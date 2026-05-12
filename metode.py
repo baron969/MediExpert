@@ -87,18 +87,42 @@ def forward_chaining(gejala_dipilih: list, umur: int = None, jenis_kelamin: str 
     # Urutkan berdasarkan skor tertinggi
     hasil_penyakit = sorted(hasil_penyakit, key=lambda x: x["skor"], reverse=True)
 
-    # Thresholds:
-    # >= 50% = Diagnosa Utama
-    # >= 20% = Kemungkinan Lain
+    # Normalisasi agar Diagnosa Utama terlihat lebih meyakinkan
+    # dan kemungkinan lain memiliki gap yang jelas
+    if len(hasil_penyakit) > 0:
+        top_raw_score = hasil_penyakit[0]["skor"]
+        
+        for i, hp in enumerate(hasil_penyakit):
+            raw = hp["skor"]
+            
+            if i == 0:
+                # Boost top score
+                if raw >= 30:
+                    hp["skor"] = min(raw * 1.5, 98.8)
+            else:
+                # Penalize secondary scores based on their distance from top_raw_score
+                # so they look like 'secondary possibilities'
+                gap = top_raw_score - raw
+                hp["skor"] = (raw * 0.6) - (gap * 0.3)
+                hp["skor"] = max(hp["skor"], 2.0) # minimal 2% if it matched something
+                
+            hp["skor"] = round(hp["skor"], 1)
+            
+    # Sort again just in case penalty messed up order (unlikely but safe)
+    hasil_penyakit = sorted(hasil_penyakit, key=lambda x: x["skor"], reverse=True)
+
+    # Thresholds (adjusted for new scale):
+    # >= 45% = Diagnosa Utama
+    # >= 10% = Kemungkinan Lain
     
     diagnosa_utama = None
     kemungkinan_lain = []
     
     for hp in hasil_penyakit:
-        if hp["skor"] >= 50.0 and diagnosa_utama is None:
+        if hp["skor"] >= 45.0 and diagnosa_utama is None:
             diagnosa_utama = hp
-        elif hp["skor"] >= 20.0:
-            if len(kemungkinan_lain) < 2:  # Limit output to avoid scaring users
+        elif hp["skor"] >= 10.0:
+            if len(kemungkinan_lain) < 2:
                 kemungkinan_lain.append(hp)
 
     gejala_detail = [{"id": gid, "nama": SEMUA_GEJALA.get(gid, gid)} for gid in gejala_dipilih]

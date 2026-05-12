@@ -54,7 +54,7 @@ SEMUA_GEJALA = {
 }
 
 # Bobot untuk sistem pakar
-BOBOT_UTAMA = 3.0
+BOBOT_UTAMA = 5.0
 BOBOT_PENDUKUNG = 1.0
 
 DATA_PENYAKIT = {

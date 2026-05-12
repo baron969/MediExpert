@@ -1,216 +1,209 @@
 {% extends "base.html" %}
 
-{% block title %}Hasil Analisis — Diagnova{% endblock %}
+{% block title %}Laporan Diagnosa — Diagnova{% endblock %}
 
 {% block content %}
 
-<!-- Print Only Letterhead -->
+<!-- Print Header -->
 <div class="hidden print:block mb-8 border-b-2 border-slate-800 pb-4">
     <div class="flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-black uppercase tracking-widest text-black">Diagnova Clinic</h1>
-            <p class="text-sm text-gray-600">Laporan Deteksi Dini Sistem Pakar</p>
+            <p class="text-sm text-gray-600">Laporan AI Triage Medis</p>
         </div>
         <div class="text-right">
             <p class="text-sm font-bold">Tanggal: {{ timestamp.split(',')[0] }}</p>
-            <p class="text-xs text-gray-500">ID Pasien: #{{ range(1000, 9999) | random }}</p>
+            <p class="text-xs text-gray-500">ID Pasien: #{{ range(10000, 99999) | random }}</p>
         </div>
     </div>
 </div>
 
-<div class="pt-24 pb-20 px-4 flex-grow relative print:pt-0">
-    
-    <!-- Dynamic Background based on result -->
-    {% set bg_class = 'bg-slate-50 dark:bg-slate-900' %}
-    {% set text_class = 'text-slate-900 dark:text-white' %}
-    {% if hasil.diagnosa_utama %}
-        {% if hasil.diagnosa_utama.warna == 'red' or hasil.diagnosa_utama.warna == 'rose' %}
-            {% set bg_class = 'bg-rose-50 dark:bg-rose-950' %}
-            {% set text_class = 'text-rose-900 dark:text-rose-100' %}
-        {% elif hasil.diagnosa_utama.warna == 'emerald' or hasil.diagnosa_utama.warna == 'teal' %}
-            {% set bg_class = 'bg-emerald-50 dark:bg-emerald-950' %}
-            {% set text_class = 'text-emerald-900 dark:text-emerald-100' %}
-        {% else %}
-            {% set bg_class = 'bg-blue-50 dark:bg-blue-950' %}
-            {% set text_class = 'text-blue-900 dark:text-blue-100' %}
-        {% endif %}
-    {% endif %}
-
-    <div class="absolute inset-0 top-0 h-96 {{ bg_class }} transition-colors duration-500 z-0 border-b border-white/50 dark:border-slate-800/50 print:hidden"></div>
-
-    <div class="max-w-5xl mx-auto relative z-10">
+<div class="pt-24 pb-20 px-4 flex-grow relative print:pt-0 z-10">
+    <div class="max-w-5xl mx-auto">
         
         <!-- Header Info -->
-        <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-4" data-aos="fade-down">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4" data-aos="fade-down">
             <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur text-slate-600 dark:text-slate-300 font-bold text-xs uppercase tracking-wider mb-3 shadow-sm border border-slate-200 dark:border-slate-700 print:hidden">
-                    <i class="fas fa-file-medical-alt text-brand-500"></i> Rekam Medis Digital
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs uppercase tracking-wider mb-4 shadow-sm print:hidden">
+                    <i class="fas fa-microchip text-brand-500"></i> Hasil Analisis AI
                 </div>
-                <h1 class="font-display text-3xl md:text-4xl font-extrabold {{ text_class }} tracking-tight print:text-2xl print:text-black">Laporan Analisis Kesehatan</h1>
-                
-                <!-- Humor touch -->
-                {% if hasil.diagnosa_utama %}
-                    <p class="text-sm mt-2 font-medium {{ text_class }} opacity-80 print:hidden">
-                        <i class="fas fa-robot mr-1"></i> Sistem kami telah merenungkan gejala Anda dan ini hasilnya. Tenang, jangan panik dulu ya!
-                    </p>
-                {% else %}
-                    <p class="text-sm mt-2 font-medium {{ text_class }} opacity-80 print:hidden">
-                        <i class="fas fa-robot mr-1"></i> Sistem kami sempat menggaruk-garuk kepalanya (secara digital). Gejala Anda cukup unik.
-                    </p>
-                {% endif %}
+                <h1 class="font-display text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight print:text-2xl print:text-black">Laporan Kesehatan</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium max-w-xl print:hidden">
+                    Sistem pakar Diagnova telah mensintesis data gejala Anda. Berikut adalah proyeksi klinis berdasarkan pola probabilitas tertinggi.
+                </p>
             </div>
             
-            <div class="flex flex-wrap justify-center gap-2 print:flex-col print:gap-0 print:text-right print:items-end">
-                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm border border-white dark:border-slate-700 print:border-none print:shadow-none print:p-0">
-                    <i class="fas fa-user mr-1 text-slate-400 print:hidden"></i> Pasien: {{ nama_pasien | default('Anonim', true) }}
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur px-5 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 print:border-none print:shadow-none print:p-0 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-300 print:hidden">
+                    <i class="fas fa-user"></i>
                 </div>
-                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm border border-white dark:border-slate-700 print:border-none print:shadow-none print:p-0 print:mt-1">
-                    Demografi: {{ umur }} tahun &bull; {{ jenis_kelamin }}
+                <div>
+                    <div class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5 print:text-gray-500">Profil Pasien</div>
+                    <div class="font-bold text-slate-900 dark:text-white print:text-black text-sm">
+                        {{ nama_pasien | default('Anonim', true) }} &bull; {{ umur }} thn &bull; {{ jenis_kelamin }}
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
             
-            <!-- LEFT COLUMN: Main Diagnosis -->
-            <div class="lg:col-span-7 space-y-8 print:mb-8">
+            <!-- LEFT COLUMN: Main Result -->
+            <div class="lg:col-span-8 space-y-6 print:mb-8">
                 
                 {% if hasil.diagnosa_utama %}
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 md:p-10 shadow-soft border border-white dark:border-slate-700 relative overflow-hidden group print:shadow-none print:border print:border-gray-300 print:rounded-none" data-aos="zoom-in" data-aos-delay="100">
-                    <!-- Accent bar -->
-                    <div class="absolute top-0 left-0 w-full h-2 bg-{{ hasil.diagnosa_utama.warna }}-500 print:hidden"></div>
+                <!-- Primary Diagnosis Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-glass border border-slate-100 dark:border-slate-700 relative overflow-hidden group print:shadow-none print:border-gray-300 print:rounded-none" data-aos="fade-up">
                     
-                    <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8 print:mb-4">
+                    <div class="flex items-center justify-between mb-8">
                         <div>
-                            <div class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 print:text-black print:font-bold">Diagnosis Primer (Kecocokan Tertinggi)</div>
-                            <h2 class="font-display text-3xl font-black text-slate-900 dark:text-white leading-tight print:text-black">{{ hasil.diagnosa_utama.nama }}</h2>
+                            <div class="text-xs font-bold text-brand-500 dark:text-brand-400 uppercase tracking-widest mb-2 flex items-center gap-2"><i class="fas fa-check-circle"></i> Diagnosa Primer</div>
+                            <h2 class="font-display text-3xl md:text-4xl font-black text-slate-900 dark:text-white print:text-black">{{ hasil.diagnosa_utama.nama }}</h2>
                         </div>
-                        <!-- Score Circle -->
-                        <div class="shrink-0 relative print:hidden">
-                            <svg class="w-24 h-24 transform -rotate-90">
-                                <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-100 dark:text-slate-700" />
-                                <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="{{ 251.2 - (251.2 * hasil.diagnosa_utama.skor / 100) }}" class="text-{{ hasil.diagnosa_utama.warna }}-500 transition-all duration-1000 ease-out" />
-                            </svg>
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                                <span class="text-xl font-black text-slate-800 dark:text-white">{{ hasil.diagnosa_utama.skor | round | int }}<span class="text-xs">%</span></span>
+                        <div class="w-16 h-16 rounded-2xl bg-{{ hasil.diagnosa_utama.warna }}-50 dark:bg-{{ hasil.diagnosa_utama.warna }}-900/30 text-{{ hasil.diagnosa_utama.warna }}-500 flex items-center justify-center text-3xl print:hidden">
+                            <i class="{{ hasil.diagnosa_utama.icon | default('fas fa-virus') }}"></i>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Progress Bar -->
+                    <div class="mb-8 p-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 print:bg-white print:border-none print:p-0">
+                        <div class="flex justify-between items-end mb-3">
+                            <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">Tingkat Keyakinan Sistem (Confidence Level)</div>
+                            <div class="text-2xl font-black text-{{ hasil.diagnosa_utama.warna }}-500">{{ hasil.diagnosa_utama.skor | round | int }}%</div>
+                        </div>
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 mb-2 overflow-hidden print:hidden">
+                            <div class="bg-{{ hasil.diagnosa_utama.warna }}-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: {{ hasil.diagnosa_utama.skor }}%"></div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Berdasarkan pencocokan bobot dominan (Forward Chaining)</p>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2 print:text-black"><i class="fas fa-info-circle text-slate-400 mr-2"></i>Deskripsi Medis</h4>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed print:text-black">{{ hasil.diagnosa_utama.deskripsi }}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 print:border-none print:p-0">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 print:text-black">Penyebab Umum</h4>
+                                <p class="text-slate-800 dark:text-slate-200 text-sm font-medium print:text-black">{{ hasil.diagnosa_utama.penyebab }}</p>
+                            </div>
+                            <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-100 dark:border-rose-900 print:border-none print:p-0">
+                                <h4 class="text-xs font-bold text-rose-500 uppercase tracking-widest mb-2 print:text-black">Tingkat Perhatian</h4>
+                                <p class="text-rose-800 dark:text-rose-200 text-sm font-bold print:text-black">
+                                    {% if hasil.diagnosa_utama.skor >= 80 %}Sangat Tinggi / Waspada{% elif hasil.diagnosa_utama.skor >= 60 %}Menengah / Perlu Pantauan{% else %}Ringan / Gejala Awal{% endif %}
+                                </p>
                             </div>
                         </div>
-                        <div class="hidden print:block text-2xl font-black">{{ hasil.diagnosa_utama.skor | round | int }}%</div>
-                    </div>
 
-                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 mb-6 print:bg-transparent print:border-none print:p-0">
-                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed print:text-black">{{ hasil.diagnosa_utama.deskripsi }}</p>
-                    </div>
-
-                    <div>
-                        <div class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 print:text-black">Penyebab Umum</div>
-                        <p class="text-slate-700 dark:text-slate-300 font-medium print:text-black"><i class="fas fa-virus text-slate-300 dark:text-slate-600 mr-2 print:hidden"></i> {{ hasil.diagnosa_utama.penyebab }}</p>
+                        <!-- Key Symptoms that drove this result -->
+                        {% if hasil.diagnosa_utama.gejala_cocok_utama %}
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3 print:text-black"><i class="fas fa-key text-amber-500 mr-2"></i>Gejala Kunci yang Mempengaruhi Hasil:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for g in hasil.diagnosa_utama.gejala_cocok_utama %}
+                                <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-600 print:border-none print:bg-transparent print:p-0">- {{ g }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
-                {% elif hasil.kemungkinan_lain %}
-                <!-- No Main Diagnosis (>20% but <50%) -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-soft border-t-4 border-amber-400 print:shadow-none print:border print:border-gray-300 print:rounded-none" data-aos="zoom-in">
-                    <div class="w-16 h-16 bg-amber-50 dark:bg-amber-900/30 text-amber-500 rounded-2xl flex items-center justify-center text-3xl mb-6 print:hidden">
-                        <i class="fas fa-search-plus"></i>
+                {% else %}
+                <!-- No Main Diagnosis -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-glass border-t-4 border-slate-300 dark:border-slate-600 print:shadow-none print:border-gray-300 print:rounded-none" data-aos="zoom-in">
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-2xl flex items-center justify-center text-3xl mb-6 print:hidden">
+                        <i class="fas fa-search"></i>
                     </div>
                     <h2 class="font-display text-2xl font-bold text-slate-900 dark:text-white mb-3 print:text-black">Gejala Kurang Spesifik</h2>
-                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed print:text-black">Sistem AI kami merasa ragu karena tidak ada kecocokan di atas 50%. Anda mungkin mengalami kombinasi kondisi ringan atau sedang berada di tahap inkubasi awal penyakit.</p>
-                </div>
-                {% else %}
-                <!-- <20% match -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-soft border-t-4 border-slate-300 dark:border-slate-600 print:shadow-none print:border print:border-gray-300 print:rounded-none" data-aos="zoom-in">
-                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-6 print:hidden">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <h2 class="font-display text-2xl font-bold text-slate-900 dark:text-white mb-3 print:text-black">Kondisi Tidak Dikenali</h2>
-                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed print:text-black">Gejala yang Anda masukkan membuat sistem kami kebingungan (skor < 20%). Pastikan keluhan Anda relevan dengan saluran pernapasan atau coba ulangi tes.</p>
+                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed print:text-black">Sistem AI tidak dapat menemukan penyakit tunggal yang sangat dominan berdasarkan gejala Anda. Hal ini bisa terjadi pada fase awal inkubasi atau keluhan ringan kombinasi.</p>
                 </div>
                 {% endif %}
-
-                <!-- Gejala Terpilih Card -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-glass border border-slate-100 dark:border-slate-700 print:shadow-none print:border print:border-gray-300 print:rounded-none" data-aos="fade-up" data-aos-delay="200">
-                    <h3 class="font-display text-xl font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-3 print:text-black">
-                        <div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-slate-700 text-brand-500 dark:text-brand-400 flex items-center justify-center text-sm print:hidden"><i class="fas fa-clipboard-check"></i></div>
-                        Keluhan yang Anda Laporkan
-                    </h3>
-                    <div class="flex flex-wrap gap-2 print:block">
-                        {% for g in hasil.gejala_terpilih_detail %}
-                        <div class="px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-medium shadow-sm print:inline-block print:border-gray-300 print:bg-white print:text-black print:mb-1 print:mr-1">
-                            {{ g.nama }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
 
             </div>
 
             <!-- RIGHT COLUMN: Advice & Alternatives -->
-            <div class="lg:col-span-5 space-y-8 print:mt-8">
+            <div class="lg:col-span-4 space-y-6 print:mt-8">
                 
                 {% if hasil.diagnosa_utama %}
-                <!-- Saran Penanganan -->
-                <div class="bg-slate-900 dark:bg-brand-900 rounded-3xl p-8 shadow-xl relative overflow-hidden print:bg-white print:border print:border-gray-300 print:shadow-none print:rounded-none" data-aos="fade-left" data-aos-delay="150">
-                    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl text-white print:hidden">
-                        <i class="fas fa-notes-medical"></i>
-                    </div>
-                    <h3 class="font-display text-xl font-bold text-white mb-6 relative z-10 print:text-black">Tindakan yang Disarankan</h3>
-                    <ul class="space-y-4 relative z-10">
+                <!-- Action Plan Card -->
+                <div class="bg-slate-900 dark:bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-800 dark:border-slate-700 print:bg-white print:border-gray-300 print:shadow-none print:rounded-none" data-aos="fade-left" data-aos-delay="100">
+                    <h3 class="font-display text-lg font-bold text-white mb-5 flex items-center gap-3 print:text-black">
+                        <div class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm print:hidden"><i class="fas fa-clipboard-list"></i></div>
+                        Saran Tindakan Awal
+                    </h3>
+                    <ul class="space-y-4">
                         {% for s in hasil.diagnosa_utama.saran %}
-                        <li class="flex items-start gap-4">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-white/20 print:bg-black flex items-center justify-center shrink-0">
-                                <i class="fas fa-check text-white print:text-white text-xs"></i>
-                            </div>
-                            <span class="text-slate-200 font-medium leading-relaxed text-sm print:text-black">{{ s }}</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-caret-right text-brand-400 mt-1"></i>
+                            <span class="text-slate-300 text-sm leading-relaxed print:text-black">{{ s }}</span>
                         </li>
                         {% endfor %}
                     </ul>
+                    
+                    <div class="mt-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-widest mb-1 print:text-black">Kapan Harus ke Dokter?</h4>
+                        <p class="text-slate-300 text-xs leading-relaxed print:text-black">Segera periksa jika gejala memburuk dalam 2-3 hari atau jika mengalami sesak napas akut.</p>
+                    </div>
                 </div>
                 {% endif %}
 
                 {% if hasil.kemungkinan_lain %}
-                <!-- Kemungkinan Lain -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-glass border border-slate-100 dark:border-slate-700 print:shadow-none print:border print:border-gray-300 print:rounded-none" data-aos="fade-up" data-aos-delay="250">
-                    <h3 class="font-display text-lg font-bold text-slate-900 dark:text-white mb-5 print:text-black">
-                        {% if hasil.diagnosa_utama %}Kecurigaan Penyakit Lainnya{% else %}Daftar Potensi Kondisi{% endif %}
+                <!-- Secondary Possibilities -->
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur rounded-3xl p-6 border border-white dark:border-slate-700 print:shadow-none print:border-gray-300 print:rounded-none" data-aos="fade-up" data-aos-delay="200">
+                    <h3 class="font-display text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider print:text-black">
+                        Kemungkinan Penyakit Lainnya
                     </h3>
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         {% for h in hasil.kemungkinan_lain %}
-                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-700 border border-slate-100 dark:border-slate-700 transition-all group print:bg-white print:border-b print:rounded-none print:p-2">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm flex items-center gap-2 print:text-black">
-                                    <i class="{{ h.icon | default('fas fa-virus') }} text-slate-400 dark:text-slate-500 group-hover:text-brand-500 print:hidden transition-colors"></i> {{ h.nama }}
-                                </h4>
-                                <span class="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md text-xs font-bold text-slate-600 dark:text-slate-400 print:border-none print:text-black">{{ h.skor | round | int }}%</span>
+                        <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 print:border-none print:p-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <h4 class="font-bold text-slate-700 dark:text-slate-300 text-sm print:text-black">{{ h.nama }}</h4>
+                                <span class="text-xs font-black text-slate-400 dark:text-slate-500 print:text-black">{{ h.skor | round | int }}%</span>
                             </div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed print:text-gray-700">{{ h.deskripsi[:80] }}...</p>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 mb-2 print:hidden">
+                                <div class="bg-slate-400 dark:bg-slate-500 h-1.5 rounded-full" style="width: {{ h.skor }}%"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed print:text-gray-700">{{ h.deskripsi[:70] }}...</p>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
                 {% endif %}
 
+                <!-- All Selected Symptoms Summary -->
+                <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur rounded-3xl p-6 border border-white dark:border-slate-700 print:shadow-none print:border-gray-300 print:rounded-none" data-aos="fade-up" data-aos-delay="250">
+                    <h3 class="font-display text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider print:text-black">
+                        Seluruh Keluhan Dicatat
+                    </h3>
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for g in hasil.gejala_terpilih_detail %}
+                        <span class="px-2 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded text-[11px] font-medium print:border-none">{{ g.nama }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <!-- Disclaimer -->
-                <div class="bg-rose-50 dark:bg-rose-950 rounded-2xl p-5 border border-rose-100 dark:border-rose-900 print:bg-white print:border print:border-gray-300 print:rounded-none print:mt-8" data-aos="fade-up" data-aos-delay="300">
-                    <p class="text-xs text-rose-800 dark:text-rose-200 leading-relaxed font-medium print:text-gray-800">
-                        <strong class="font-bold block mb-1 uppercase tracking-wider text-rose-900 dark:text-rose-100 print:text-black">Disclaimer Medis:</strong>
-                        Laporan ini dihasilkan oleh kecerdasan buatan berbasis *forward chaining* dan <span class="underline font-bold">BUKAN</span> merupakan diagnosis medis yang sah. Segera kunjungi fasilitas kesehatan atau rumah sakit jika gejala memburuk. Laporan ini dapat diberikan kepada dokter sebagai referensi awal.
+                <div class="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-4 border border-amber-100 dark:border-amber-800/30 print:bg-white print:border-gray-300 print:rounded-none" data-aos="fade-up" data-aos-delay="300">
+                    <p class="text-[11px] text-amber-800 dark:text-amber-200/70 leading-relaxed font-medium print:text-gray-800">
+                        <strong class="font-bold uppercase tracking-wider text-amber-900 dark:text-amber-400 print:text-black">Disclaimer:</strong>
+                        Analisis ini bersifat probabilitas sistem (AI) dan tidak menggantikan rekam medis dokter berlisensi.
                     </p>
                 </div>
 
             </div>
         </div>
 
-        <!-- Print Action -->
-        <div class="mt-12 text-center print:hidden" data-aos="fade-up" data-aos-delay="400">
-            <div class="inline-flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-700">
-                <a href="{{ url_for('index') }}#form-diagnosa" class="px-8 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-redo"></i> Cek Kesehatan Lagi
-                </a>
-                <button onclick="window.print()" class="px-6 py-3 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <i class="fas fa-print"></i> Simpan Laporan PDF
-                </button>
-            </div>
+        <!-- Action Buttons -->
+        <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4 print:hidden" data-aos="fade-up" data-aos-delay="400">
+            <a href="{{ url_for('index') }}#form-diagnosa" class="px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-redo"></i> Analisis Ulang
+            </a>
+            <button onclick="window.print()" class="px-6 py-3.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center gap-2">
+                <i class="fas fa-file-pdf"></i> Unduh PDF
+            </button>
         </div>
 
     </div>
