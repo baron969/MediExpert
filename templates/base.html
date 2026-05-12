@@ -26,7 +26,7 @@
 <body class="flex flex-col min-h-screen relative overflow-x-hidden dark:bg-slate-900 print:bg-white">
 
 <!-- Background Animation Elements -->
-<div class="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-slate-50 dark:bg-slate-900 transition-colors duration-500 print:hidden">
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-[-1] bg-slate-50 dark:bg-slate-900 transition-colors duration-500 print:hidden">
     <!-- Modern Gradient Blur Shapes -->
     <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand-300/30 dark:bg-brand-900/20 blur-[100px] animate-slow-spin mix-blend-multiply dark:mix-blend-lighten"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-300/30 dark:bg-blue-900/20 blur-[120px] animate-slow-spin-reverse mix-blend-multiply dark:mix-blend-lighten"></div>
@@ -91,6 +91,7 @@
             <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-slate-800/50 p-1.5 rounded-full border border-white dark:border-slate-700">
                 <a href="{{ url_for('index') }}#form-diagnosa" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'index' %}bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-white{% endif %} transition-all">Mulai Diagnosa</a>
                 <a href="{{ url_for('tentang') }}" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'tentang' %}bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-white{% endif %} transition-all">Info Medis</a>
+                <a href="{{ url_for('tentang') }}" class="px-5 py-2 text-sm font-semibold rounded-full {% if request.endpoint == 'tentang' and request.args.get('tab') == 'about' %}bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-sm{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-white{% endif %} transition-all">Tentang Kami</a>
                 
                 {% if session.get('logged_in') %}
                 <div class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-2"></div>
@@ -121,6 +122,7 @@
         <div class="px-4 py-4 space-y-2">
             <a href="{{ url_for('index') }}#form-diagnosa" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'index' %}bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-white{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">Mulai Diagnosa</a>
             <a href="{{ url_for('tentang') }}" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'tentang' %}bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-white{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">Info Medis</a>
+            <a href="{{ url_for('tentang') }}" class="block px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Tentang Kami</a>
             {% if session.get('logged_in') %}
             <a href="{{ url_for('riwayat') }}" class="block px-4 py-3 rounded-xl font-medium {% if request.endpoint == 'riwayat' %}bg-slate-800 text-white{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800{% endif %}">Dashboard Admin</a>
             <a href="{{ url_for('logout') }}" class="block px-4 py-3 rounded-xl font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-800">Keluar</a>
@@ -133,28 +135,29 @@
 <div class="h-20"></div>
 
 <!-- Main Content -->
-<main class="flex-grow flex flex-col relative">
+<main class="flex-grow flex flex-col relative z-10">
     {% block content %}{% endblock %}
 </main>
 
 <!-- Footer -->
-<footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<footer class="bg-slate-900 dark:bg-slate-950 text-slate-400 py-10 mt-auto border-t border-slate-800 relative z-20 print:hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-slate-800 text-brand-400 flex items-center justify-center">
-                <i class="fas fa-robot"></i>
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 text-white flex items-center justify-center shadow">
+                <i class="fas fa-lungs text-sm"></i>
             </div>
             <div>
-                <h4 class="font-display font-bold text-white text-lg">Diagnova</h4>
-                <p class="text-xs">Sistem Pakar AI Pernapasan</p>
+                <h4 class="font-display font-bold text-white text-base">Diagnova</h4>
+                <p class="text-xs text-brand-400 tracking-wide">AI Health System</p>
             </div>
         </div>
-        <div class="text-center md:text-right max-w-sm">
-            <p class="text-xs leading-relaxed opacity-70">
-                Aplikasi ini dirancang untuk deteksi awal dan edukasi. Bukan pengganti diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.
-            </p>
-            <p class="text-xs mt-3 opacity-50">&copy; 2026 Diagnova. All rights reserved.</p>
-        </div>
+        <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+            <a href="{{ url_for('index') }}#form-diagnosa" class="hover:text-white transition-colors">Mulai Diagnosa</a>
+            <a href="{{ url_for('tentang') }}" class="hover:text-white transition-colors">Info Medis</a>
+            <a href="{{ url_for('tentang') }}" class="hover:text-white transition-colors">Tentang Kami</a>
+            <a href="{{ url_for('login') }}" class="hover:text-white transition-colors">Admin</a>
+        </nav>
+        <p class="text-xs opacity-50 text-center">&copy; 2026 Diagnova. All rights reserved.</p>
     </div>
 </footer>
 

@@ -25,25 +25,40 @@
     </div>
 </div>
 
-<!-- CARA PENGGUNAAN SECTION -->
+<!-- CARA KERJA SECTION -->
 <div class="max-w-4xl mx-auto px-4 mb-20 relative z-10" data-aos="fade-up" data-aos-delay="100">
     <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-white dark:border-slate-700 shadow-sm">
-        <h3 class="font-display text-lg font-bold text-slate-800 dark:text-white mb-6 text-center">Cara Penggunaan (3 Langkah Mudah)</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div class="p-4">
-                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">1</div>
-                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Isi Data Diri</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Masukkan profil (Umur & Gender) agar AI dapat menyesuaikan faktor risiko Anda.</p>
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-bold rounded-full mb-3 border border-brand-100 dark:border-brand-800">
+                <i class="fas fa-cogs"></i> Teknologi Berbasis AI
             </div>
-            <div class="p-4">
-                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">2</div>
-                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Pilih Gejala</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Klik pada keluhan-keluhan yang sedang Anda rasakan (minimal 3 gejala).</p>
+            <h3 class="font-display text-xl font-bold text-slate-800 dark:text-white">Cara Kerja Diagnova</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Sistem pakar dengan metode Forward Chaining</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div class="flex flex-col items-center text-center p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-700/30 border border-slate-100 dark:border-slate-700">
+                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-2xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="w-6 h-0.5 bg-brand-300 dark:bg-brand-700 mb-3"></div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-1">Kumpulkan Fakta</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Anda memilih gejala yang dirasakan. Setiap gejala adalah fakta klinis yang dimasukkan ke mesin inferensi.</p>
             </div>
-            <div class="p-4">
-                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">3</div>
-                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Dapatkan Hasil</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Sistem akan menampilkan persentase kemungkinan penyakit dan tindakan awal.</p>
+            <div class="flex flex-col items-center text-center p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-700/30 border border-slate-100 dark:border-slate-700">
+                <div class="w-12 h-12 mx-auto bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="w-6 h-0.5 bg-emerald-300 dark:bg-emerald-700 mb-3"></div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-1">Inferensi Forward Chaining</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Mesin AI mencocokkan pola gejala dengan basis pengetahuan 10+ penyakit pernapasan secara berurutan.</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-700/30 border border-slate-100 dark:border-slate-700">
+                <div class="w-12 h-12 mx-auto bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="w-6 h-0.5 bg-amber-300 dark:bg-amber-700 mb-3"></div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-1">Skor Kepercayaan</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Setiap penyakit diberi skor bobot. Hasil dengan kepercayaan tertinggi ditampilkan sebagai diagnosa primer.</p>
             </div>
         </div>
     </div>
