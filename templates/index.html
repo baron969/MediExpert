@@ -6,22 +6,46 @@
 <!-- HERO SECTION -->
 <div class="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden">
     <!-- Decorative background elements -->
-    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-    <div class="absolute top-0 left-0 -ml-20 mt-32 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-200 dark:bg-brand-900/30 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-50 animate-blob"></div>
+    <div class="absolute top-0 left-0 -ml-20 mt-32 w-72 h-72 bg-blue-200 dark:bg-blue-900/30 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
 
     <div class="max-w-4xl mx-auto px-4 relative z-10 text-center" data-aos="fade-up">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-brand-100 text-brand-700 font-bold text-sm mb-6 shadow-sm">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-brand-100 dark:border-slate-700 text-brand-700 dark:text-brand-300 font-bold text-sm mb-6 shadow-sm">
             <i class="fas fa-robot text-brand-500"></i> AI Diagnostic System 2.0
         </div>
-        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
-            Kenali Kondisi Pernapasan Anda Secara <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-600">Cerdas</span>
+        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-6">
+            Kenali Kondisi Pernapasan Anda Secara <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-600 dark:from-brand-400 dark:to-blue-400">Cerdas</span>
         </h1>
-        <p class="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p class="text-slate-500 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             Hanya butuh 2 menit. Pilih gejala yang Anda rasakan, dan biarkan sistem pakar kami menganalisis kemungkinan penyakit serta tindakan yang harus Anda ambil.
         </p>
-        <a href="#form-diagnosa" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 hover:bg-brand-600 text-white font-bold rounded-2xl shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+        <a href="#form-diagnosa" id="btnMulaiHero" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white font-bold rounded-2xl shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             Mulai Analisis <i class="fas fa-arrow-down text-sm animate-bounce"></i>
         </a>
+    </div>
+</div>
+
+<!-- CARA PENGGUNAAN SECTION -->
+<div class="max-w-4xl mx-auto px-4 mb-20 relative z-10" data-aos="fade-up" data-aos-delay="100">
+    <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-white dark:border-slate-700 shadow-sm">
+        <h3 class="font-display text-lg font-bold text-slate-800 dark:text-white mb-6 text-center">Cara Penggunaan (3 Langkah Mudah)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div class="p-4">
+                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">1</div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Isi Data Diri</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Masukkan profil (Umur & Gender) agar AI dapat menyesuaikan faktor risiko Anda.</p>
+            </div>
+            <div class="p-4">
+                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">2</div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Pilih Gejala</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Klik pada keluhan-keluhan yang sedang Anda rasakan (minimal 3 gejala).</p>
+            </div>
+            <div class="p-4">
+                <div class="w-12 h-12 mx-auto bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center text-xl font-bold mb-3">3</div>
+                <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Dapatkan Hasil</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Sistem akan menampilkan persentase kemungkinan penyakit dan tindakan awal.</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -30,8 +54,8 @@
     <div class="max-w-4xl mx-auto">
 
         {% if error %}
-        <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-xl p-5 mb-8 flex gap-4 shadow-sm" data-aos="shake">
-            <i class="fas fa-exclamation-triangle text-rose-500 text-xl mt-0.5"></i>
+        <div class="bg-rose-50 dark:bg-rose-900/30 border-l-4 border-rose-500 text-rose-800 dark:text-rose-200 rounded-xl p-5 mb-8 flex gap-4 shadow-sm" data-aos="shake">
+            <i class="fas fa-exclamation-triangle text-rose-500 dark:text-rose-400 text-xl mt-0.5"></i>
             <div>
                 <strong class="font-bold block text-lg mb-1">Perhatian</strong>
                 <span class="text-sm opacity-90">{{ error }}</span>
@@ -42,39 +66,39 @@
         <form action="{{ url_for('diagnosa') }}" method="POST" id="diagnosaForm">
             
             <!-- Profil Card -->
-            <div class="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white mb-8" data-aos="fade-up">
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white dark:border-slate-700 mb-8" data-aos="fade-up">
                 <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                    <div class="w-12 h-12 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 rounded-2xl flex items-center justify-center text-xl shadow-inner">
                         <i class="fas fa-user-edit"></i>
                     </div>
                     <div>
-                        <h2 class="font-display text-2xl font-bold text-slate-900">Profil Pasien</h2>
-                        <p class="text-sm text-slate-500">Membantu AI menyesuaikan faktor risiko medis</p>
+                        <h2 class="font-display text-2xl font-bold text-slate-900 dark:text-white">Profil Pasien</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Membantu AI menyesuaikan faktor risiko medis</p>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="md:col-span-3">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Nama Panggilan (Opsional)</label>
-                        <input type="text" name="nama_pasien" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800" placeholder="Ketik nama Anda..." value="{{ request.form.get('nama_pasien', '') }}">
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Panggilan (Opsional)</label>
+                        <input type="text" id="inputNama" name="nama_pasien" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800 dark:text-white" placeholder="Ketik nama Anda..." value="{{ request.form.get('nama_pasien', '') }}">
                     </div>
                     <div class="md:col-span-1">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Umur <span class="text-rose-500">*</span></label>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Umur <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <input type="number" name="umur" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800 pr-12" placeholder="Cth: 25" min="12" max="100" required value="{{ request.form.get('umur', '') }}">
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">Thn</span>
+                            <input type="number" name="umur" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 shadow-inner transition-all text-slate-800 dark:text-white pr-12" placeholder="Cth: 25" min="0" required value="{{ request.form.get('umur', '') }}">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 dark:text-slate-500 font-medium">Thn</span>
                         </div>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Jenis Kelamin <span class="text-rose-500">*</span></label>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Jenis Kelamin <span class="text-rose-500">*</span></label>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="cursor-pointer">
                                 <input type="radio" name="jenis_kelamin" value="Laki-laki" class="peer sr-only" required {% if request.form.get('jenis_kelamin') == 'Laki-laki' %}checked{% endif %}>
-                                <div class="px-4 py-3.5 bg-slate-50 rounded-xl text-center font-semibold text-slate-500 peer-checked:bg-brand-500 peer-checked:text-white shadow-inner peer-checked:shadow-md transition-all">Laki-laki</div>
+                                <div class="px-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-semibold text-slate-500 dark:text-slate-400 peer-checked:bg-brand-500 peer-checked:dark:bg-brand-600 peer-checked:text-white peer-checked:border-brand-500 shadow-inner peer-checked:shadow-md transition-all">Laki-laki</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="jenis_kelamin" value="Perempuan" class="peer sr-only" required {% if request.form.get('jenis_kelamin') == 'Perempuan' %}checked{% endif %}>
-                                <div class="px-4 py-3.5 bg-slate-50 rounded-xl text-center font-semibold text-slate-500 peer-checked:bg-rose-400 peer-checked:text-white shadow-inner peer-checked:shadow-md transition-all">Perempuan</div>
+                                <div class="px-4 py-3.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-semibold text-slate-500 dark:text-slate-400 peer-checked:bg-rose-400 peer-checked:dark:bg-rose-500 peer-checked:text-white peer-checked:border-rose-400 shadow-inner peer-checked:shadow-md transition-all">Perempuan</div>
                             </label>
                         </div>
                     </div>
@@ -82,33 +106,33 @@
             </div>
 
             <!-- Gejala Card -->
-            <div class="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white" data-aos="fade-up" data-aos-delay="100">
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-glass border border-white dark:border-slate-700" data-aos="fade-up" data-aos-delay="100">
                 <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                    <div class="w-12 h-12 bg-brand-50 dark:bg-brand-900/50 text-brand-500 dark:text-brand-400 rounded-2xl flex items-center justify-center text-xl shadow-inner">
                         <i class="fas fa-clipboard-list"></i>
                     </div>
                     <div>
-                        <h2 class="font-display text-2xl font-bold text-slate-900">Keluhan yang Dirasakan</h2>
-                        <p class="text-sm text-slate-500">Pilih minimal 3 gejala yang paling sesuai.</p>
+                        <h2 class="font-display text-2xl font-bold text-slate-900 dark:text-white">Keluhan yang Dirasakan</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Pilih minimal 3 gejala yang paling sesuai.</p>
                     </div>
                 </div>
 
                 <div class="space-y-12">
                     {% for kat in kategori_gejala %}
                     <div>
-                        <h3 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-sm"><i class="fas fa-hashtag"></i></span>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-5 flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-300 text-sm"><i class="fas fa-hashtag"></i></span>
                             {{ kat.kategori }}
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {% for g in kat.gejala %}
                             <label class="relative cursor-pointer group block h-full">
                                 <input type="checkbox" name="gejala" value="{{ g.id }}" class="gejala-checkbox peer absolute opacity-0 w-0 h-0" onchange="updateGejalaCount()" {% if g.id in (gejala_terpilih or []) %}checked{% endif %}>
-                                <div class="gejala-card-hover flex items-start gap-4 p-4 rounded-2xl border-2 border-slate-100 bg-white h-full">
-                                    <div class="check-icon w-6 h-6 rounded-full border-2 border-slate-200 text-transparent flex items-center justify-center text-xs shrink-0 mt-0.5 transition-all">
+                                <div class="gejala-card-hover flex items-start gap-4 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 h-full shadow-sm">
+                                    <div class="check-icon w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 text-transparent flex items-center justify-center text-xs shrink-0 mt-0.5 transition-all">
                                         <i class="fas fa-check"></i>
                                     </div>
-                                    <span class="font-semibold text-slate-700 text-sm leading-relaxed pt-0.5">{{ g.nama }}</span>
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300 text-sm leading-relaxed pt-0.5">{{ g.nama }}</span>
                                 </div>
                             </label>
                             {% endfor %}
@@ -120,7 +144,7 @@
 
             <!-- Floating Action Bar -->
             <div class="fixed bottom-0 left-0 right-0 z-50 p-4 pointer-events-none floating-bar" id="floatingBar">
-                <div class="max-w-3xl mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-3xl p-4 shadow-2xl pointer-events-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="max-w-3xl mx-auto bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-xl border border-slate-700 rounded-3xl p-4 shadow-2xl pointer-events-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                     
                     <div class="flex items-center gap-4 w-full sm:w-auto px-2">
                         <div class="w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-xl font-black text-white shadow-inner" id="gejalaCount">0</div>
@@ -187,6 +211,16 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         updateGejalaCount();
+        
+        // Auto-focus logic when clicking "Mulai Analisis" from Hero
+        const btnMulai = document.getElementById('btnMulaiHero');
+        if (btnMulai) {
+            btnMulai.addEventListener('click', (e) => {
+                setTimeout(() => {
+                    document.getElementById('inputNama').focus();
+                }, 600); // Wait for smooth scroll
+            });
+        }
     });
 
     document.getElementById('diagnosaForm').addEventListener('submit', function(e) {

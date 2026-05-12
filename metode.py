@@ -6,10 +6,10 @@ def get_semua_gejala_terformat() -> list:
     Mengelompokkan gejala ke dalam kategori untuk UI.
     """
     kategori = {
-        "Umum & Demam": ["G01", "G02", "G05", "G06", "G07", "G08", "G31", "G32", "G34"],
-        "Pernapasan Utama": ["G03", "G04", "G40", "G41", "G33", "G12", "G42", "G13", "G14", "G15", "G43"],
-        "Hidung & Tenggorokan": ["G09", "G10", "G11", "G16", "G17", "G18", "G19", "G20"],
-        "Lainnya": ["G21", "G22", "G23", "G30"],
+        "Umum & Demam": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"],
+        "Pernapasan Utama": ["G10", "G11", "G12", "G13", "G14", "G15", "G16", "G17", "G18", "G19"],
+        "Hidung & Tenggorokan": ["G20", "G21", "G22", "G23", "G24", "G25", "G26", "G27"],
+        "Lainnya": ["G30", "G31", "G32", "G33", "G34"],
     }
     
     hasil = []

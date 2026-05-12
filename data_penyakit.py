@@ -4,45 +4,53 @@
 # =============================================================================
 
 SEMUA_GEJALA = {
-    # Gejala Umum & Demam
+    # ------------------------------------
+    # KATEGORI 1: UMUM & DEMAM (G01 - G09)
+    # ------------------------------------
     "G01": "Demam tinggi (> 38°C)",
     "G02": "Demam ringan (37–38°C)",
+    "G03": "Menggigil",
+    "G04": "Keringat berlebih, terutama di malam hari",
     "G05": "Nyeri otot dan sendi (Mialgia)",
     "G06": "Kelelahan ekstrem / badan lemas (Malaise)",
     "G07": "Sakit kepala",
-    "G08": "Menggigil",
-    "G31": "Keringat berlebih, terutama di malam hari",
-    "G32": "Penurunan berat badan drastis tanpa sebab",
-    "G34": "Nafsu makan menurun drastis",
+    "G08": "Nafsu makan menurun drastis",
+    "G09": "Penurunan berat badan drastis tanpa sebab",
 
-    # Pernapasan & Batuk
-    "G03": "Batuk kering / tidak berdahak",
-    "G04": "Batuk berdahak bening / putih",
-    "G40": "Batuk berdahak kuning / hijau / kental",
-    "G33": "Batuk berdarah (Hemoptisis)",
-    "G41": "Batuk kronis (lebih dari 3 minggu)",
-    "G12": "Sesak napas (Dyspnea) akut",
-    "G42": "Napas pendek saat beraktivitas ringan",
-    "G13": "Napas berbunyi ngik-ngik (Mengi / Wheezing)",
-    "G14": "Dada terasa berat, perih, atau tertekan",
+    # ------------------------------------
+    # KATEGORI 2: PERNAPASAN UTAMA (G10 - G19)
+    # ------------------------------------
+    "G10": "Batuk kering / tidak berdahak",
+    "G11": "Batuk berdahak bening / putih",
+    "G12": "Batuk berdahak kuning / hijau / kental",
+    "G13": "Batuk berdarah (Hemoptisis)",
+    "G14": "Batuk kronis (lebih dari 3 minggu)",
     "G15": "Batuk sering memburuk pada malam atau dini hari",
+    "G16": "Sesak napas (Dyspnea) akut",
+    "G17": "Napas pendek saat beraktivitas ringan",
+    "G18": "Napas berbunyi ngik-ngik (Mengi / Wheezing)",
+    "G19": "Dada terasa berat, perih, atau tertekan",
 
-    # Hidung, Tenggorokan & Kepala
-    "G09": "Hidung tersumbat",
-    "G10": "Hidung berair (Pilek / Rinorea)",
-    "G11": "Sering bersin-bersin",
-    "G16": "Sakit tenggorokan (nyeri lokal)",
-    "G17": "Nyeri hebat saat menelan makanan/minuman",
-    "G18": "Amandel bengkak dan kemerahan",
-    "G19": "Muncul bercak putih / nanah pada amandel",
-    "G20": "Suara serak atau hilang sementara",
+    # ------------------------------------
+    # KATEGORI 3: HIDUNG & TENGGOROKAN (G20 - G29)
+    # ------------------------------------
+    "G20": "Hidung tersumbat",
+    "G21": "Hidung berair (Pilek / Rinorea)",
+    "G22": "Sering bersin-bersin",
+    "G23": "Sakit tenggorokan (nyeri lokal)",
+    "G24": "Nyeri hebat saat menelan makanan/minuman",
+    "G25": "Amandel bengkak dan kemerahan",
+    "G26": "Muncul bercak putih / nanah pada amandel",
+    "G27": "Suara serak atau hilang sementara",
 
-    # Gejala Spesifik / Lanjutan
-    "G21": "Hilang indra perasa (Ageusia)",
-    "G22": "Hilang indra penciuman (Anosmia)",
-    "G23": "Mual, muntah, atau sakit perut",
-    "G30": "Pembengkakan kelenjar getah bening (di leher/rahang)",
-    "G43": "Bibir atau ujung jari tampak kebiruan (Sianosis)",
+    # ------------------------------------
+    # KATEGORI 4: SPESIFIK & LAINNYA (G30 - G39)
+    # ------------------------------------
+    "G30": "Hilang indra perasa (Ageusia)",
+    "G31": "Hilang indra penciuman (Anosmia)",
+    "G32": "Mual, muntah, atau sakit perut",
+    "G33": "Pembengkakan kelenjar getah bening (di leher/rahang)",
+    "G34": "Bibir atau ujung jari tampak kebiruan (Sianosis)",
 }
 
 # Bobot untuk sistem pakar
@@ -52,141 +60,140 @@ BOBOT_PENDUKUNG = 1.0
 DATA_PENYAKIT = {
     "P01": {
         "nama": "Influenza (Flu)",
-        "deskripsi": "Infeksi virus pernapasan akut yang sangat menular. Berbeda dengan batuk pilek biasa, flu datang tiba-tiba dengan gejala sistemik seperti demam tinggi dan nyeri otot.",
+        "deskripsi": "Infeksi virus pernapasan akut yang sangat menular. Flu datang tiba-tiba dengan gejala sistemik seperti demam tinggi dan nyeri otot.",
         "penyebab": "Virus Influenza tipe A, B, atau C.",
-        "gejala_utama": ["G01", "G05", "G06", "G08", "G03"],
-        "gejala_pendukung": ["G07", "G09", "G10", "G16", "G23"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "gejala_utama": ["G01", "G03", "G05", "G06", "G10"],
+        "gejala_pendukung": ["G07", "G20", "G21", "G23", "G32"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
             "Istirahat total (bed rest) dan hindari interaksi fisik.",
-            "Perbanyak asupan cairan untuk mencegah dehidrasi akibat demam.",
-            "Gunakan obat analgetik/antipiretik (Parasetamol) sesuai dosis.",
-            "Waspadai komplikasi pada anak di bawah 5 tahun atau lansia di atas 65 tahun."
+            "Perbanyak asupan cairan untuk mencegah dehidrasi.",
+            "Konsumsi obat pereda gejala (Parasetamol) sesuai dosis.",
+            "Waspadai komplikasi jika batuk tak kunjung sembuh."
         ],
         "warna": "blue",
         "icon": "fas fa-virus",
     },
     "P02": {
         "nama": "COVID-19 (Suspect)",
-        "deskripsi": "Penyakit pernapasan yang disebabkan oleh infeksi virus SARS-CoV-2. Spektrum gejalanya sangat luas, dengan karakteristik unik pada hilangnya kemampuan mencium bau dan mengecap rasa.",
+        "deskripsi": "Penyakit pernapasan yang disebabkan oleh SARS-CoV-2. Karakteristik uniknya adalah hilangnya kemampuan mencium bau dan mengecap rasa.",
         "penyebab": "Virus SARS-CoV-2.",
-        "gejala_utama": ["G21", "G22", "G01", "G03", "G12", "G06"],
-        "gejala_pendukung": ["G05", "G07", "G14", "G23", "G09"],
-        "faktor_risiko": {"umur_min": 45, "umur_max": 100, "gender": "Semua"}, # Usia lanjut rentan komplikasi
+        "gejala_utama": ["G30", "G31", "G01", "G10", "G16", "G06"],
+        "gejala_pendukung": ["G05", "G07", "G19", "G32", "G20"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "SEGERA lakukan isolasi mandiri untuk memutus mata rantai penularan.",
-            "Lakukan pengujian medis (Swab Antigen / PCR) untuk diagnosis pasti.",
-            "Pantau saturasi oksigen darah menggunakan oximeter secara rutin.",
-            "Segera hubungi faskes terdekat jika saturasi oksigen turun di bawah 95%."
+            "Lakukan isolasi mandiri untuk memutus mata rantai penularan.",
+            "Lakukan pengujian medis (Swab Antigen / PCR).",
+            "Pantau saturasi oksigen darah secara berkala.",
+            "Segera ke RS jika saturasi oksigen turun di bawah 95%."
         ],
-        "warna": "red",
+        "warna": "rose",
         "icon": "fas fa-shield-virus",
     },
     "P03": {
         "nama": "Faringitis Akut (Radang Tenggorokan)",
-        "deskripsi": "Peradangan akut pada dinding mukosa faring. Seringkali merupakan bagian dari infeksi saluran pernapasan atas (ISPA) yang lebih luas.",
-        "penyebab": "70% infeksi virus (Rhinovirus, Adenovirus), 30% infeksi bakteri (Streptococcus grup A).",
-        "gejala_utama": ["G16", "G17", "G18", "G30"],
-        "gejala_pendukung": ["G02", "G19", "G07", "G06", "G03"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "deskripsi": "Peradangan akut pada mukosa faring. Seringkali merupakan bagian dari ISPA yang lebih luas.",
+        "penyebab": "Infeksi virus (Rhinovirus) atau bakteri (Streptococcus).",
+        "gejala_utama": ["G23", "G24", "G25", "G33"],
+        "gejala_pendukung": ["G02", "G26", "G07", "G06", "G10"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "Konsumsi banyak cairan hangat, seperti air lemon dicampur madu.",
-            "Gunakan obat kumur antiseptik ringan atau air garam hangat 3 kali sehari.",
-            "Jika terdapat demam tinggi dan bercak nanah (G19), konsultasikan dengan dokter untuk kemungkinan perlunya antibiotik."
+            "Konsumsi cairan hangat seperti lemon dicampur madu.",
+            "Gunakan obat kumur antiseptik atau air garam hangat.",
+            "Jika ada demam tinggi dan bercak nanah, konsultasi ke dokter untuk antibiotik."
         ],
         "warna": "purple",
         "icon": "fas fa-head-side-cough",
     },
     "P04": {
         "nama": "Asma Bronkial",
-        "deskripsi": "Gangguan inflamasi kronis pada jalan napas yang ditandai dengan mengi episodik, sesak napas, rasa berat di dada, dan batuk. Bersifat reversibel, dapat memburuk di malam hari.",
-        "penyebab": "Hipersensitivitas saluran napas (Genetik, Alergi, Lingkungan, atau Stres).",
-        "gejala_utama": ["G12", "G13", "G14", "G15"],
-        "gejala_pendukung": ["G03", "G06", "G11", "G42"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "deskripsi": "Gangguan inflamasi kronis pada jalan napas yang ditandai dengan mengi episodik, sesak napas, dan rasa berat di dada.",
+        "penyebab": "Hipersensitivitas saluran napas akibat genetik atau alergi.",
+        "gejala_utama": ["G16", "G18", "G19", "G15"],
+        "gejala_pendukung": ["G10", "G06", "G22", "G17"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "Identifikasi dan hindari alergen pemicu (debu, serbuk sari, asap rokok, udara dingin).",
-            "Gunakan inhaler pereda (reliever) golongan SABA (seperti salbutamol) jika serangan datang.",
-            "Praktikkan teknik pernapasan relaksasi (pursed-lip breathing).",
-            "Segera cari pertolongan medis di IGD jika napas tidak membaik setelah 2 kali penggunaan inhaler."
+            "Jauhi pemicu alergi seperti debu, asap rokok, atau udara dingin.",
+            "Gunakan inhaler pereda (SABA) saat serangan datang.",
+            "Tetap tenang dan atur pernapasan secara perlahan.",
+            "Ke IGD jika sesak tidak membaik dengan inhaler."
         ],
         "warna": "emerald",
         "icon": "fas fa-wind",
     },
     "P05": {
         "nama": "ISPA / Common Cold",
-        "deskripsi": "Infeksi Saluran Pernapasan Akut yang ringan. Berpusat pada rongga hidung (Rinitis) tanpa gejala sistemik yang berat.",
+        "deskripsi": "Infeksi Saluran Pernapasan Akut yang ringan. Terutama berpusat pada rongga hidung tanpa gejala sistemik yang berat.",
         "penyebab": "Rhinovirus atau Coronavirus ringan.",
-        "gejala_utama": ["G09", "G10", "G11", "G02"],
-        "gejala_pendukung": ["G03", "G04", "G16", "G07", "G20"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "gejala_utama": ["G20", "G21", "G22", "G02"],
+        "gejala_pendukung": ["G10", "G11", "G23", "G07", "G27"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "Umumnya bersifat self-limiting (sembuh sendiri) dalam 7-10 hari.",
-            "Tingkatkan kualitas istirahat dan nutrisi (Vitamin C & Zink).",
-            "Gunakan dekongestan nasal jika hidung mampet mengganggu kualitas tidur."
+            "Umumnya bersifat self-limiting (bisa sembuh sendiri).",
+            "Tingkatkan istirahat dan konsumsi Vitamin C.",
+            "Gunakan dekongestan jika hidung tersumbat mengganggu tidur."
         ],
         "warna": "cyan",
         "icon": "fas fa-head-side-mask",
     },
     "P06": {
-        "nama": "Tuberkulosis (TBC) Paru Aktif",
-        "deskripsi": "Infeksi kronis mematikan jika tidak diobati, yang secara bertahap menghancurkan jaringan paru-paru. Karakteristik utamanya adalah batuk lama disertai keringat malam tanpa sebab.",
+        "nama": "Tuberkulosis (TBC) Paru",
+        "deskripsi": "Infeksi kronis yang secara perlahan menghancurkan jaringan paru-paru. Karakteristik utamanya adalah batuk kronis dan keringat malam.",
         "penyebab": "Infeksi bakteri Mycobacterium tuberculosis.",
-        "gejala_utama": ["G41", "G33", "G31", "G32", "G02"],
-        "gejala_pendukung": ["G04", "G40", "G06", "G14", "G34", "G12"],
-        "faktor_risiko": {"umur_min": 15, "umur_max": 100, "gender": "Semua"},
+        "gejala_utama": ["G14", "G13", "G04", "G09", "G02"],
+        "gejala_pendukung": ["G11", "G12", "G06", "G19", "G08", "G16"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "KONDISI SERIUS: Segera buat janji dengan dokter spesialis paru (Sp.P).",
-            "Lakukan pemeriksaan dahak (BTA / TCM) dan rontgen dada (Thorax).",
-            "Wajib menggunakan masker N95/bedah untuk melindungi keluarga di rumah.",
-            "Jika terdiagnosis, pengobatan (OAT) memakan waktu minimal 6 bulan tanpa terputus."
+            "PERHATIAN: Kondisi berisiko menular. Segera ke puskesmas/dokter spesialis paru.",
+            "Lakukan pemeriksaan dahak (TCM) dan rontgen dada.",
+            "Gunakan masker medis untuk melindungi keluarga di rumah.",
+            "Pengobatan (OAT) membutuhkan waktu minimal 6 bulan tanpa putus."
         ],
-        "warna": "rose",
+        "warna": "amber",
         "icon": "fas fa-lungs",
     },
     "P07": {
-        "nama": "Pneumonia",
-        "deskripsi": "Peradangan dan konsolidasi pada kantung udara (alveolus) paru-paru akibat infeksi, menyebabkan kesulitan oksigen masuk ke dalam darah.",
-        "penyebab": "Bakteri (Streptococcus pneumoniae), Virus, atau Jamur.",
-        "gejala_utama": ["G01", "G40", "G12", "G14", "G08", "G43"],
-        "gejala_pendukung": ["G06", "G05", "G07", "G23", "G34"],
-        "faktor_risiko": {"umur_min": 60, "umur_max": 100, "gender": "Semua"}, # Ekstra berisiko untuk lansia
+        "nama": "Pneumonia (Paru Basah)",
+        "deskripsi": "Peradangan pada kantung udara (alveolus) yang dapat terisi cairan pekat atau nanah.",
+        "penyebab": "Infeksi Bakteri (Streptococcus pneumoniae) atau Virus.",
+        "gejala_utama": ["G01", "G12", "G16", "G19", "G03", "G34"],
+        "gejala_pendukung": ["G06", "G05", "G07", "G32", "G08"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "KONDISI DARURAT MEDIS, terutama bagi lansia atau bayi.",
-            "Pemeriksaan penunjang seperti rontgen dada dan tes darah sangat krusial.",
-            "Sangat mungkin membutuhkan terapi antibiotik intravena dan bantuan oksigen di rumah sakit.",
-            "Jangan mencoba mengobati sendiri jika napas terasa dangkal dan cepat."
+            "KONDISI DARURAT MEDIS. Penderita seringkali membutuhkan bantuan oksigen.",
+            "Segera cari fasilitas gawat darurat (IGD).",
+            "Sangat mungkin membutuhkan terapi antibiotik intravena dan rawat inap."
         ],
         "warna": "indigo",
         "icon": "fas fa-lungs-virus",
     },
     "P08": {
         "nama": "Bronkitis Akut",
-        "deskripsi": "Peradangan pada lapisan saluran bronkial (saluran yang membawa udara ke paru-paru). Seringkali berkembang setelah flu atau infeksi virus ringan.",
-        "penyebab": "Infeksi virus pernapasan, paparan iritan (asap rokok, debu kimia).",
-        "gejala_utama": ["G04", "G40", "G14", "G02"],
-        "gejala_pendukung": ["G12", "G06", "G08", "G16", "G05"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "deskripsi": "Peradangan pada lapisan saluran bronkial (saluran napas utama). Sering berkembang setelah flu berat.",
+        "penyebab": "Infeksi virus pernapasan atau paparan iritan.",
+        "gejala_utama": ["G11", "G12", "G19", "G02"],
+        "gejala_pendukung": ["G16", "G06", "G03", "G23", "G05"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "Berhenti merokok dan hindari paparan asap rokok pasif atau debu.",
-            "Gunakan humidifier udara di dalam kamar.",
-            "Minum cairan ekspektoran atau mukolitik ringan untuk membantu mengeluarkan dahak.",
-            "Hubungi dokter jika batuk berlangsung lebih dari 3 minggu (berisiko menjadi bronkitis kronis)."
+            "Berhenti merokok dan hindari paparan asap.",
+            "Minum ekspektoran untuk membantu membuang dahak.",
+            "Gunakan pelembap udara (humidifier) di ruangan.",
+            "Periksa ke dokter jika batuk lebih dari 3 minggu."
         ],
         "warna": "fuchsia",
         "icon": "fas fa-smoking-ban",
     },
     "P09": {
         "nama": "Laringitis Akut (Radang Pita Suara)",
-        "deskripsi": "Peradangan pada laring (kotak suara) akibat penggunaan suara berlebihan, iritasi, atau infeksi. Gejala paling spesifik adalah hilangnya suara.",
-        "penyebab": "Infeksi virus akut, refluks asam lambung (GERD), atau vokalisasi berlebihan.",
-        "gejala_utama": ["G20", "G03", "G16"],
-        "gejala_pendukung": ["G17", "G02", "G10", "G30", "G11"],
-        "faktor_risiko": {"umur_min": 0, "umur_max": 100, "gender": "Semua"},
+        "deskripsi": "Peradangan pada kotak suara (laring). Gejala utamanya adalah suara yang serak atau hilang sama sekali.",
+        "penyebab": "Infeksi virus, refluks lambung (GERD), atau penggunaan suara berlebihan.",
+        "gejala_utama": ["G27", "G10", "G23"],
+        "gejala_pendukung": ["G24", "G02", "G21", "G33", "G22"],
+        "faktor_risiko": {"umur_min": 0, "umur_max": 150, "gender": "Semua"},
         "saran": [
-            "Istirahatkan suara Anda secara total (vocal rest) — jangan berbisik, karena berbisik justru lebih menegangkan pita suara.",
-            "Hindari konsumsi kafein, alkohol, dan makanan pedas yang bisa memicu asam lambung naik ke laring.",
-            "Minum banyak air putih suhu ruang."
+            "Istirahatkan suara Anda sepenuhnya (vocal rest). Jangan berbisik karena membebani pita suara.",
+            "Hindari konsumsi alkohol, kafein, dan makanan pedas.",
+            "Minum banyak air putih bersuhu ruang."
         ],
         "warna": "teal",
         "icon": "fas fa-comment-slash",
