@@ -19,129 +19,7 @@
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class', // Enable dark mode toggling via class
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            400: '#60a5fa',
-                            500: '#3b82f6', // More visible blue (Tailwind Blue 500)
-                            600: '#2563eb',
-                            900: '#1e3a8a',
-                        }
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(59, 130, 246, 0.05)',
-                        'soft': '0 20px 40px -15px rgba(0,0,0,0.05)',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        body { 
-            background: linear-gradient(135deg, #f8fafc, #eff6ff, #f0f9ff);
-            background-size: 200% 200%;
-            animation: gradientBG 15s ease infinite;
-            color: #334155;
-            min-height: 100vh;
-            transition: color 0.3s;
-        }
-        
-        .dark body {
-            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
-            background-size: 200% 200%;
-            animation: gradientBG 15s ease infinite;
-            color: #e2e8f0;
-        }
-
-        /* Glassmorphism Navbar */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .dark .glass-nav {
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Custom Checkbox Interaction */
-        .gejala-checkbox:checked + div {
-            border-color: #3b82f6 !important;
-            background-color: #eff6ff !important;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15) !important;
-            transform: translateY(-2px);
-        }
-        .dark .gejala-checkbox:checked + div {
-            background-color: #1e3a8a !important;
-        }
-        .gejala-checkbox:checked + div .check-icon {
-            background-color: #3b82f6 !important;
-            border-color: #3b82f6 !important;
-            color: white !important;
-            transform: scale(1.1);
-        }
-        
-        .gejala-card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .gejala-card-hover:hover {
-            border-color: #bfdbfe;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
-        }
-        .dark .gejala-card-hover:hover {
-            border-color: #3b82f6;
-        }
-
-        /* Hide Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        
-        /* Floating Action Bar */
-        .floating-bar {
-            transform: translateY(150%);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .floating-bar.show {
-            transform: translateY(0);
-        }
-
-        /* Background Animations */
-        @keyframes flyAround {
-            0% { transform: translate(-10vw, 80vh) rotate(15deg); }
-            25% { transform: translate(30vw, 20vh) rotate(-10deg) scale(1.2); }
-            50% { transform: translate(70vw, 50vh) rotate(20deg); }
-            75% { transform: translate(110vw, 10vh) rotate(-15deg) scale(0.8); }
-            100% { transform: translate(120vw, -10vh) rotate(0deg); }
-        }
-        @keyframes rocketFly {
-            0% { transform: translate(-10vw, 110vh) rotate(15deg); }
-            100% { transform: translate(110vw, -10vh) rotate(15deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -256,55 +134,33 @@
 <!-- Scripts -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    // Dark Mode Logic
-    const htmlEl = document.documentElement;
-    const themeBtn = document.getElementById('themeToggle');
-    const themeBtnMobile = document.getElementById('themeToggleMobile');
-    
-    function setTheme(isDark) {
-        if (isDark) {
-            htmlEl.classList.add('dark');
-            localStorage.theme = 'dark';
-        } else {
-            htmlEl.classList.remove('dark');
-            localStorage.theme = 'light';
+    tailwind.config = {
+        darkMode: 'class', // Enable dark mode toggling via class
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    display: ['Outfit', 'sans-serif'],
+                },
+                colors: {
+                    brand: {
+                        50: '#eff6ff',
+                        100: '#dbeafe',
+                        400: '#60a5fa',
+                        500: '#3b82f6', 
+                        600: '#2563eb',
+                        900: '#1e3a8a',
+                    }
+                },
+                boxShadow: {
+                    'glass': '0 8px 32px 0 rgba(59, 130, 246, 0.05)',
+                    'soft': '0 20px 40px -15px rgba(0,0,0,0.05)',
+                }
+            }
         }
     }
-
-    // Init Theme
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        setTheme(true);
-    } else {
-        setTheme(false);
-    }
-
-    [themeBtn, themeBtnMobile].forEach(btn => {
-        if(btn) btn.addEventListener('click', () => setTheme(!htmlEl.classList.contains('dark')));
-    });
-
-    // Initialize Animations
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 50,
-        easing: 'ease-out-cubic',
-    });
-
-    // Mobile Menu
-    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-        document.getElementById('mobileMenu').classList.toggle('hidden');
-    });
-
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-        const nav = document.getElementById('navbar');
-        if (window.scrollY > 10) {
-            nav.classList.add('shadow-sm');
-        } else {
-            nav.classList.remove('shadow-sm');
-        }
-    });
 </script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% block extra_scripts %}{% endblock %}
 
 </body>
