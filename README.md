@@ -1,8 +1,8 @@
-# 🏥 MediExpert - Sistem Pakar Diagnosa Penyakit
+# 🏥 Diagnova - Sistem Pakar Diagnosa Penyakit
 
-**MediExpert** adalah aplikasi sistem pakar modern berbasis web yang dirancang untuk memberikan diagnosa awal terhadap berbagai jenis penyakit berdasarkan gejala yang dialami pengguna. Aplikasi ini menggunakan **Metode Forward Chaining** untuk memproses data gejala (fakta) menuju kesimpulan (diagnosa) secara akurat.
+**Diagnova** adalah aplikasi sistem pakar modern berbasis web yang dirancang untuk memberikan diagnosa awal terhadap berbagai jenis penyakit berdasarkan gejala yang dialami pengguna. Aplikasi ini menggunakan **Metode Forward Chaining** untuk memproses data gejala (fakta) menuju kesimpulan (diagnosa) secara akurat.
 
-![MediExpert Preview](https://via.placeholder.com/1200x600.png?text=MediExpert+UI+Preview)
+![Diagnova Preview](https://via.placeholder.com/1200x600.png?text=Diagnova+UI+Preview)
 
 ## ✨ Fitur Utama
 - 🧠 **Forward Chaining Engine**: Logika inferensi cerdas dengan sistem scoring persentase kecocokan.
@@ -33,11 +33,11 @@ SISTEM PAKAR DETEKSI/
 ## 🚀 Cara Menjalankan
 1. Clone repositori ini:
    ```bash
-   git clone https://github.com/baron969/MediExpert.git
+   git clone https://github.com/baron969/Diagnova.git
    ```
 2. Masuk ke direktori proyek:
    ```bash
-   cd MediExpert
+   cd Diagnova
    ```
 3. Install dependensi:
    ```bash

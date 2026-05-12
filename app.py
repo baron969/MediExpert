@@ -1,6 +1,6 @@
 # =============================================================================
 # app.py — Flask + Supabase Backend
-# Sistem Pakar Diagnosa Penyakit — MediExpert
+# Sistem Pakar Diagnosa Penyakit — Diagnova
 # =============================================================================
 
 import json
@@ -333,7 +333,7 @@ def tentang():
 # ===========================================================================
 if __name__ == "__main__":
     print("=" * 60)
-    print("  MediExpert — Sistem Pakar Diagnosa Penyakit")
+    print("  Diagnova — Sistem Pakar Diagnosa Penyakit")
     print("  Backend: Flask + Supabase")
     print("=" * 60)
     print(f"  Penyakit : {len(DATA_PENYAKIT)}")
