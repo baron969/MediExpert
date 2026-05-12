@@ -155,9 +155,6 @@
             <a href="{{ url_for('index') }}#form-diagnosa" class="hover:text-white transition-colors">Mulai Diagnosa</a>
             <a href="{{ url_for('tentang') }}" class="hover:text-white transition-colors">Info Medis</a>
             <a href="{{ url_for('tentang_kami') }}" class="hover:text-white transition-colors">Tentang Kami</a>
-            {% if request.endpoint != 'index' %}
-            <a href="{{ url_for('login') }}" class="hover:text-white transition-colors">Admin</a>
-            {% endif %}
         </nav>
         <p class="text-xs opacity-50 text-center">&copy; 2026 Diagnova. All rights reserved.</p>
     </div>

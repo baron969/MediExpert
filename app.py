@@ -73,7 +73,7 @@ except Exception as e:
 
 def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: list, diagnosa: str, skor: float):
     """Simpan ke Supabase; fallback ke SQLite jika gagal."""
-    data = {
+    data_sqlite = {
         "nama_pasien": nama_pasien,
         "umur": umur,
         "jenis_kelamin": jenis_kelamin,
@@ -82,11 +82,25 @@ def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: 
         "skor": round(skor, 2),
         "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
     }
+    
+    data_supabase_lama = {
+        "nama_pasien": nama_pasien,
+        "gejala": json.dumps(gejala_ids),
+        "diagnosa": diagnosa,
+        "skor": round(skor, 2),
+        "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
+    }
+    
     try:
         db = get_supabase()
         if db:
-            db.table("riwayat_konsultasi").insert(data).execute()
-            return
+            try:
+                db.table("riwayat_konsultasi").insert(data_sqlite).execute()
+                return
+            except Exception as e:
+                print(f"[INFO] Insert dengan umur & jenis_kelamin gagal, fallback schema lama: {e}")
+                db.table("riwayat_konsultasi").insert(data_supabase_lama).execute()
+                return
     except Exception as e:
         print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
     # Fallback SQLite
@@ -94,7 +108,7 @@ def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: 
         conn = sqlite3.connect(DB_PATH)
         conn.execute(
             "INSERT INTO riwayat_konsultasi (nama_pasien,umur,jenis_kelamin,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?,?,?)",
-            (data["nama_pasien"], data["umur"], data["jenis_kelamin"], data["gejala"], data["diagnosa"], data["skor"], data["timestamp"])
+            (data_sqlite["nama_pasien"], data_sqlite["umur"], data_sqlite["jenis_kelamin"], data_sqlite["gejala"], data_sqlite["diagnosa"], data_sqlite["skor"], data_sqlite["timestamp"])
         )
         conn.commit()
         conn.close()
@@ -121,6 +135,10 @@ def ambil_riwayat(limit: int = 50) -> list:
                     item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
                 except Exception:
                     item["gejala_nama"] = []
+                
+                # Default jika belum ada kolom di Supabase
+                item["umur"] = item.get("umur", 0)
+                item["jenis_kelamin"] = item.get("jenis_kelamin", "-")
             return rows
     except Exception as e:
         print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
