@@ -1,8 +1,3 @@
-# =============================================================================
-# app.py — Flask + Supabase Backend
-# Sistem Pakar Diagnosa Penyakit — Diagnova
-# =============================================================================
-
 import json
 import os
 import sqlite3
