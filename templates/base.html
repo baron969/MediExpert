@@ -48,15 +48,25 @@
     </script>
 
     <style>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
         body { 
-            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            background: linear-gradient(135deg, #f8fafc, #eff6ff, #f0f9ff);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
             color: #334155;
             min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
+            transition: color 0.3s;
         }
         
         .dark body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
             color: #e2e8f0;
         }
 
@@ -205,7 +215,7 @@
             <p class="text-xs leading-relaxed opacity-70">
                 Aplikasi ini dirancang untuk deteksi awal dan edukasi. Bukan pengganti diagnosis medis resmi. Selalu konsultasikan dengan dokter profesional.
             </p>
-            <p class="text-xs mt-3 opacity-50">&copy; 2024 MediExpert. All rights reserved.</p>
+            <p class="text-xs mt-3 opacity-50">&copy; 2026 MediExpert. All rights reserved.</p>
         </div>
     </div>
 </footer>

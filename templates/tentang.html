@@ -104,12 +104,21 @@
         const iconId = id.replace('acc-', 'icon-');
         const icon = document.getElementById(iconId);
         
-        if (content.classList.contains('hidden')) {
+        // Is the clicked item already open?
+        const isHidden = content.classList.contains('hidden');
+        
+        // Close all accordions first
+        document.querySelectorAll('[id^="acc-"]').forEach(el => {
+            el.classList.add('hidden');
+        });
+        document.querySelectorAll('[id^="icon-"]').forEach(el => {
+            el.style.transform = 'rotate(0deg)';
+        });
+        
+        // If the clicked item was previously hidden, open it
+        if (isHidden) {
             content.classList.remove('hidden');
             icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
         }
     }
 </script>

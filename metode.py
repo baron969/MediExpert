@@ -98,7 +98,8 @@ def forward_chaining(gejala_dipilih: list, umur: int = None, jenis_kelamin: str 
         if hp["skor"] >= 50.0 and diagnosa_utama is None:
             diagnosa_utama = hp
         elif hp["skor"] >= 20.0:
-            kemungkinan_lain.append(hp)
+            if len(kemungkinan_lain) < 2:  # Limit output to avoid scaring users
+                kemungkinan_lain.append(hp)
 
     gejala_detail = [{"id": gid, "nama": SEMUA_GEJALA.get(gid, gid)} for gid in gejala_dipilih]
 
