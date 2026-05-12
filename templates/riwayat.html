@@ -27,24 +27,24 @@
                 </div>
             </div>
             
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between transition-colors">
                 <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Jenis Penyakit Ditemukan</p>
-                    <h3 class="text-3xl font-extrabold text-slate-900">{{ statistik.labels | length }}</h3>
+                    <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Jenis Penyakit Ditemukan</p>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white">{{ statistik.labels | length }}</h3>
                 </div>
-                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl">
+                <div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 flex items-center justify-center text-xl">
                     <i class="fas fa-notes-medical"></i>
                 </div>
             </div>
             
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between transition-colors">
                 <div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Kasus Terbanyak</p>
-                    <h3 class="text-lg font-bold text-slate-900 leading-tight">
+                    <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Kasus Terbanyak</p>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">
                         {% if statistik.labels %}{{ statistik.labels[0] | truncate(25, True, '…') }}{% else %}—{% endif %}
                     </h3>
                 </div>
-                <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+                <div class="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-500 flex items-center justify-center text-xl">
                     <i class="fas fa-chart-line"></i>
                 </div>
             </div>
@@ -53,14 +53,14 @@
         <!-- CHARTS -->
         {% if statistik.total > 0 %}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">Distribusi Diagnosa</h3>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-6">Distribusi Diagnosa</h3>
                 <div class="h-64 flex justify-center">
                     <canvas id="chartDiagnosa"></canvas>
                 </div>
             </div>
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">Frekuensi Kasus</h3>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-6">Frekuensi Kasus</h3>
                 <div class="h-64">
                     <canvas id="chartBar"></canvas>
                 </div>
@@ -69,14 +69,14 @@
         {% endif %}
 
         <!-- TABLE -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-            <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h3 class="text-lg font-bold text-slate-800">Rekam Pasien</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">Rekam Pasien</h3>
                 <div class="relative w-full sm:w-72">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-slate-400"></i>
                     </div>
-                    <input type="text" id="searchRiwayat" class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all" placeholder="Cari nama atau diagnosa...">
+                    <input type="text" id="searchRiwayat" class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500" placeholder="Cari nama atau diagnosa...">
                 </div>
             </div>
             
@@ -84,43 +84,43 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse" id="tableRiwayat">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
-                            <th class="px-6 py-4 border-b border-slate-200">ID</th>
-                            <th class="px-6 py-4 border-b border-slate-200">Pasien</th>
-                            <th class="px-6 py-4 border-b border-slate-200">Hasil Analisis</th>
-                            <th class="px-6 py-4 border-b border-slate-200">Skor</th>
-                            <th class="px-6 py-4 border-b border-slate-200">Waktu</th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-right">Aksi</th>
+                        <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">ID</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Pasien</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Hasil Analisis</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Skor</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Waktu</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                         {% for item in riwayat %}
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-4 text-sm text-slate-500 font-mono">#{{ item.id }}</td>
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/80 transition-colors">
+                            <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-mono">#{{ item.id }}</td>
                             <td class="px-6 py-4">
-                                <div class="text-sm font-bold text-slate-900">{{ item.nama_pasien }}</div>
-                                <div class="text-xs text-slate-500 mt-0.5">{{ item.umur }} tahun, {{ item.jenis_kelamin }}</div>
+                                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ item.nama_pasien }}</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ item.umur }} tahun, {{ item.jenis_kelamin }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 {% if 'Kemungkinan' in item.diagnosa %}
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50">
                                     {{ item.diagnosa }}
                                 </span>
                                 {% elif 'Tidak Terdiagnosa' in item.diagnosa %}
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
                                     {{ item.diagnosa }}
                                 </span>
                                 {% else %}
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
                                     {{ item.diagnosa }}
                                 </span>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 text-sm font-bold text-brand-600">{{ item.skor | round | int }}%</td>
-                            <td class="px-6 py-4 text-xs text-slate-500">{{ item.timestamp }}</td>
+                            <td class="px-6 py-4 text-sm font-bold text-brand-600 dark:text-brand-400">{{ item.skor | round | int }}%</td>
+                            <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">{{ item.timestamp }}</td>
                             <td class="px-6 py-4 text-right">
                                 <form action="{{ url_for('hapus_riwayat', item_id=item.id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                    <button type="submit" class="text-rose-400 hover:text-rose-600 p-2 rounded-lg hover:bg-rose-50 transition-colors">
+                                    <button type="submit" class="text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -132,11 +132,11 @@
             </div>
             {% else %}
             <div class="py-16 text-center px-4">
-                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-folder-open text-3xl text-slate-300"></i>
+                <div class="w-20 h-20 bg-slate-50 dark:bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-folder-open text-3xl text-slate-300 dark:text-slate-500"></i>
                 </div>
-                <h3 class="text-lg font-bold text-slate-800 mb-1">Belum ada data riwayat</h3>
-                <p class="text-slate-500 text-sm">Data analisis pasien akan otomatis muncul di sini setelah seseorang mengisi formulir.</p>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Belum ada data riwayat</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">Data analisis pasien akan otomatis muncul di sini setelah seseorang mengisi formulir.</p>
             </div>
             {% endif %}
         </div>

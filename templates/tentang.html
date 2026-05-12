@@ -93,27 +93,4 @@
     </div>
 </div>
 
-<script>
-    function toggleAccordion(id) {
-        const content = document.getElementById(id);
-        const iconId = id.replace('acc-', 'icon-');
-        const icon = document.getElementById(iconId);
-        
-        const isHidden = content.classList.contains('hidden');
-        
-        // Close all
-        document.querySelectorAll('[id^="acc-"]').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('[id^="icon-"]').forEach(el => {
-            el.classList.remove('fa-minus', 'text-brand-500', 'rotate-180');
-            el.classList.add('fa-plus', 'text-slate-400');
-        });
-        
-        // Open clicked if it was hidden
-        if (isHidden) {
-            content.classList.remove('hidden');
-            icon.classList.remove('fa-plus', 'text-slate-400');
-            icon.classList.add('fa-minus', 'text-brand-500', 'rotate-180');
-        }
-    }
-</script>
 {% endblock %}

@@ -24,6 +24,16 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
     if(btn) btn.addEventListener('click', () => setTheme(!htmlEl.classList.contains('dark')));
 });
 
+// Fix PDF printing in dark mode
+window.addEventListener('beforeprint', () => {
+    htmlEl.classList.remove('dark');
+});
+window.addEventListener('afterprint', () => {
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        htmlEl.classList.add('dark');
+    }
+});
+
 // Initialize Animations
 if (typeof AOS !== 'undefined') {
     AOS.init({
