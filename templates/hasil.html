@@ -210,3 +210,29 @@
 </div>
 
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+    {% if hasil.diagnosa_utama and hasil.diagnosa_utama.skor > 95 %}
+    document.addEventListener("DOMContentLoaded", function() {
+        const warningSound = new Audio("https://www.myinstants.com/media/sounds/warning-alarm-loud-af.mp3");
+        warningSound.volume = 1.0;
+        
+        let playAttempt = setInterval(() => {
+            warningSound.play().then(() => {
+                clearInterval(playAttempt);
+            }).catch(error => {
+                console.log("Audio play di-block, menunggu interaksi user...");
+            });
+        }, 1000);
+
+        // Jika berhasil play saat klik dimanapun
+        document.body.addEventListener('click', function playOnClick() {
+            warningSound.play();
+            clearInterval(playAttempt);
+            document.body.removeEventListener('click', playOnClick);
+        }, { once: true });
+    });
+    {% endif %}
+</script>
+{% endblock %}

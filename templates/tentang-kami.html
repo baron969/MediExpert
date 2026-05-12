@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Tentang Kami — Diagnova{% endblock %}
+
+{% block content %}
+<!-- TENTANG KAMI HERO -->
+<div class="relative pt-32 pb-20 overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-900">
+    <div class="max-w-5xl mx-auto px-4 relative z-10 text-center" data-aos="fade-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 dark:bg-slate-800 text-brand-600 dark:text-brand-400 font-bold text-sm mb-6 shadow-sm border border-brand-100 dark:border-slate-700">
+            <i class="fas fa-users"></i> Mengenal Kami
+        </div>
+        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
+            Membangun <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-600">Kesehatan Digital</span> yang Lebih Baik
+        </h1>
+        <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            Diagnova adalah sistem pakar cerdas yang dirancang untuk memberikan edukasi dan deteksi dini penyakit pernapasan melalui teknologi Forward Chaining.
+        </p>
+    </div>
+</div>
+
+<!-- MISSION SECTION -->
+<div class="py-20 px-4 bg-white dark:bg-slate-900">
+    <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16" data-aos="fade-up" data-aos-delay="100">
+            <div class="p-8 rounded-3xl bg-brand-50 dark:bg-slate-800/50 border border-brand-100 dark:border-slate-700 text-center hover:shadow-xl transition-all duration-300">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-brand-500 text-white flex items-center justify-center text-3xl mb-6 shadow-lg shadow-brand-500/30">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-slate-900 dark:text-white mb-3">Misi Kami</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Memberikan akses mudah terhadap deteksi dini kesehatan pernapasan kepada masyarakat secara gratis dan akurat.</p>
+            </div>
+            <div class="p-8 rounded-3xl bg-emerald-50 dark:bg-slate-800/50 border border-emerald-100 dark:border-slate-700 text-center hover:shadow-xl transition-all duration-300">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-3xl mb-6 shadow-lg shadow-emerald-500/30">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-slate-900 dark:text-white mb-3">Keamanan Data</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Setiap sesi analisis bersifat anonim. Data gejala Anda hanya digunakan untuk keperluan kalkulasi diagnosa saat itu juga.</p>
+            </div>
+            <div class="p-8 rounded-3xl bg-amber-50 dark:bg-slate-800/50 border border-amber-100 dark:border-slate-700 text-center hover:shadow-xl transition-all duration-300">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500 text-white flex items-center justify-center text-3xl mb-6 shadow-lg shadow-amber-500/30">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-slate-900 dark:text-white mb-3">Berbasis Riset</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Basis pengetahuan kami dikurasi dari jurnal medis terpercaya dan panduan klinis internasional yang terverifikasi.</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 dark:bg-slate-800 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden" data-aos="fade-up">
+            <div class="relative z-10">
+                <h2 class="font-display text-3xl font-bold mb-6">Filosofi Diagnova</h2>
+                <p class="text-slate-300 leading-relaxed mb-8 text-lg">
+                    Kami percaya bahwa teknologi harus memberdayakan manusia. Diagnova hadir bukan untuk menggantikan dokter, melainkan untuk memberikan "peta jalan" awal bagi individu agar mereka lebih waspada terhadap gejala yang dirasakan. Dengan metode Forward Chaining, kami mensimulasikan cara berpikir seorang pakar dalam menarik kesimpulan dari fakta-fakta yang ada.
+                </p>
+                <div class="flex items-center gap-4 text-brand-400 font-bold">
+                    <i class="fas fa-quote-left text-2xl opacity-50"></i>
+                    <span>Solusi Cerdas untuk Napas yang Lebih Lega.</span>
+                </div>
+            </div>
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <!-- Disclaimer Banner -->
+        <div class="mt-12 p-6 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-200 dark:border-amber-800/30 flex flex-col sm:flex-row items-start gap-4" data-aos="fade-up">
+            <div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-amber-900 dark:text-amber-300 mb-1">Perhatian Penting</h4>
+                <p class="text-sm text-amber-800 dark:text-amber-200/70 leading-relaxed">
+                    Diagnova adalah alat bantu deteksi awal berbasis kecerdasan buatan dan <strong>bukan pengganti diagnosa dokter profesional</strong>. Selalu konsultasikan gejala Anda kepada tenaga medis untuk penanganan yang tepat. Sistem ini hanya berfungsi sebagai edukasi dan panduan awal.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
