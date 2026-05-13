@@ -1,17 +1,48 @@
-import json
-from data_penyakit import DATA_PENYAKIT, SEMUA_GEJALA, BOBOT_UTAMA, BOBOT_PENDUKUNG
+from data_penyakit import DATA_PENYAKIT, SEMUA_GEJALA
 
+
+# ---------------------------------------------------------------------------
+# Tingkat keyakinan pengguna (CF User)
+# ---------------------------------------------------------------------------
+KEYAKINAN_USER = {
+    "tidak_tahu": 0.0,
+    "mungkin": 0.4,
+    "kemungkinan_besar": 0.7,
+    "pasti_ya": 1.0,
+}
+
+
+def get_label_keyakinan(cf: float) -> str:
+    for label, val in KEYAKINAN_USER.items():
+        if abs(val - cf) < 0.01:
+            return label.replace("_", " ").title()
+    return "Tidak Tahu"
+
+
+# ---------------------------------------------------------------------------
+# Helper kombinasi CF berurutan (semua CF positif)
+# CF_combine(cf1, cf2) = cf1 + cf2 * (1 - cf1)
+# ---------------------------------------------------------------------------
+def cf_combine_sequential(cf_values: list) -> float:
+    if not cf_values:
+        return 0.0
+    result = cf_values[0]
+    for cf in cf_values[1:]:
+        result = result + cf * (1 - result)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Format gejala ber-kategori untuk UI
+# ---------------------------------------------------------------------------
 def get_semua_gejala_terformat() -> list:
-    """
-    Mengelompokkan gejala ke dalam kategori untuk UI.
-    """
     kategori = {
         "Umum & Demam": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09"],
         "Pernapasan Utama": ["G10", "G11", "G12", "G13", "G14", "G15", "G16", "G17", "G18", "G19"],
         "Hidung & Tenggorokan": ["G20", "G21", "G22", "G23", "G24", "G25", "G26", "G27"],
         "Lainnya": ["G30", "G31", "G32", "G33", "G34"],
     }
-    
+
     hasil = []
     for kat_nama, ids in kategori.items():
         gejala_kat = []
@@ -19,119 +50,103 @@ def get_semua_gejala_terformat() -> list:
             if gid in SEMUA_GEJALA:
                 gejala_kat.append({"id": gid, "nama": SEMUA_GEJALA[gid]})
         hasil.append({"kategori": kat_nama, "gejala": gejala_kat})
-    
+
     return hasil
 
-def forward_chaining(gejala_dipilih: list, umur: int = None, jenis_kelamin: str = None) -> dict:
+
+# ---------------------------------------------------------------------------
+# Certainty Factor Method — Diagnosa berbasis CF
+# ---------------------------------------------------------------------------
+def certainty_factor_method(
+    gejala_dipilih: dict, umur: int = None, jenis_kelamin: str = None
+) -> dict:
     """
-    Melakukan proses diagnosa berdasarkan kombinasi gejala yang dipilih user.
-    Algoritma baru menggunakan pembobotan gejala utama, gejala pendukung, 
-    dan penyesuaian skor berdasarkan faktor risiko (umur/gender).
+    gejala_dipilih: {kode_gejala: cf_user, ...}
+    cf_user adalah nilai keyakinan pengguna (0.0, 0.4, 0.7, atau 1.0)
+
+    Untuk setiap penyakit:
+      1. Cocokkan gejala yang dipilih dengan daftar gejala penyakit
+      2. Hitung CF tiap kecocokan: CF_expert × CF_user
+      3. Gabungkan semua CF secara sekuensial
+      4. Konversi ke persentase untuk ditampilkan
     """
     hasil_penyakit = []
-    gejala_set = set(gejala_dipilih)
 
     for pid, p_data in DATA_PENYAKIT.items():
-        # Hitung Bobot Maksimal Penyakit Ini
-        max_score = (len(p_data["gejala_utama"]) * BOBOT_UTAMA) + (len(p_data["gejala_pendukung"]) * BOBOT_PENDUKUNG)
-        
-        if max_score == 0: continue
-            
-        current_score = 0.0
+        cf_list = []
         gejala_cocok_utama = []
         gejala_cocok_pendukung = []
 
-        # Cek Gejala Utama
-        for g_utama in p_data["gejala_utama"]:
-            if g_utama in gejala_set:
-                current_score += BOBOT_UTAMA
-                gejala_cocok_utama.append(SEMUA_GEJALA.get(g_utama, g_utama))
+        # Gabung utama + pendukung jadi satu untuk pengecekan
+        semua_gejala_penyakit = []
+        for gid, cf_expert in p_data["gejala_utama"]:
+            semua_gejala_penyakit.append((gid, cf_expert, True))
+        for gid, cf_expert in p_data["gejala_pendukung"]:
+            semua_gejala_penyakit.append((gid, cf_expert, False))
 
-        # Cek Gejala Pendukung
-        for g_pendukung in p_data["gejala_pendukung"]:
-            if g_pendukung in gejala_set:
-                current_score += BOBOT_PENDUKUNG
-                gejala_cocok_pendukung.append(SEMUA_GEJALA.get(g_pendukung, g_pendukung))
+        for gid, cf_expert, is_utama in semua_gejala_penyakit:
+            if gid in gejala_dipilih:
+                cf_user = gejala_dipilih[gid]
+                cf_combined = cf_expert * cf_user
+                if cf_combined > 0:
+                    cf_list.append(cf_combined)
+                    nama_gejala = SEMUA_GEJALA.get(gid, gid)
+                    if is_utama:
+                        gejala_cocok_utama.append(nama_gejala)
+                    else:
+                        gejala_cocok_pendukung.append(nama_gejala)
 
-        # Kalkulasi persentase awal
-        persentase = (current_score / max_score) * 100
+        if not cf_list:
+            continue
 
-        # Penyesuaian Faktor Risiko Demografi (Opsional)
-        if umur is not None:
-            r_min = p_data["faktor_risiko"]["umur_min"]
-            r_max = p_data["faktor_risiko"]["umur_max"]
-            if r_min <= umur <= r_max:
-                # Jika sesuai demografi risiko, berikan bonus kecil (maks 5%) agar lebih sensitif
-                # Bonus diberikan hanya jika sudah ada gejala cocok
-                if persentase > 0:
-                    persentase += 5.0
-                    
-        # Pastikan tidak lebih dari 100
-        persentase = min(persentase, 100.0)
+        cf_total = cf_combine_sequential(cf_list)
+        skor_persen = round(cf_total * 100, 1)
 
-        # Hanya rekam jika ada kecocokan signifikan
-        if persentase > 0:
-            hasil_penyakit.append({
-                "id": pid,
-                "nama": p_data["nama"],
-                "deskripsi": p_data["deskripsi"],
-                "penyebab": p_data["penyebab"],
-                "saran": p_data["saran"],
-                "icon": p_data["icon"],
-                "warna": p_data["warna"],
-                "skor": round(persentase, 2),
-                "gejala_cocok_utama": gejala_cocok_utama,
-                "gejala_cocok_pendukung": gejala_cocok_pendukung,
-            })
+        hasil_penyakit.append({
+            "id": pid,
+            "nama": p_data["nama"],
+            "deskripsi": p_data["deskripsi"],
+            "penyebab": p_data["penyebab"],
+            "saran": p_data["saran"],
+            "icon": p_data["icon"],
+            "warna": p_data["warna"],
+            "skor": skor_persen,
+            "cf": round(cf_total, 4),
+            "gejala_cocok_utama": gejala_cocok_utama,
+            "gejala_cocok_pendukung": gejala_cocok_pendukung,
+        })
 
-    # Urutkan berdasarkan skor tertinggi
-    hasil_penyakit = sorted(hasil_penyakit, key=lambda x: x["skor"], reverse=True)
+    # Urutkan berdasarkan CF tertinggi
+    hasil_penyakit = sorted(hasil_penyakit, key=lambda x: x["cf"], reverse=True)
 
-    # Normalisasi agar Diagnosa Utama terlihat lebih meyakinkan
-    # dan kemungkinan lain memiliki gap yang jelas
-    if len(hasil_penyakit) > 0:
-        top_raw_score = hasil_penyakit[0]["skor"]
-        
-        for i, hp in enumerate(hasil_penyakit):
-            raw = hp["skor"]
-            
-            if i == 0:
-                # Boost top score
-                if raw >= 30:
-                    hp["skor"] = min(raw * 1.5, 98.8)
-            else:
-                # Penalize secondary scores based on their distance from top_raw_score
-                # so they look like 'secondary possibilities'
-                gap = top_raw_score - raw
-                hp["skor"] = (raw * 0.6) - (gap * 0.3)
-                hp["skor"] = max(hp["skor"], 2.0) # minimal 2% if it matched something
-                
-            hp["skor"] = round(hp["skor"], 1)
-            
-    # Sort again just in case penalty messed up order (unlikely but safe)
-    hasil_penyakit = sorted(hasil_penyakit, key=lambda x: x["skor"], reverse=True)
-
-    # Thresholds (adjusted for new scale):
-    # >= 45% = Diagnosa Utama
-    # >= 10% = Kemungkinan Lain
-    
+    # Thresholds:
+    # CF >= 0.40 (40%) → Diagnosa Utama
+    # CF >= 0.10 (10%) → Kemungkinan Lain
     diagnosa_utama = None
     kemungkinan_lain = []
-    
+
     for hp in hasil_penyakit:
-        if hp["skor"] >= 45.0 and diagnosa_utama is None:
+        if hp["cf"] >= 0.40 and diagnosa_utama is None:
             diagnosa_utama = hp
-        elif hp["skor"] >= 10.0:
+        elif hp["cf"] >= 0.10:
             if len(kemungkinan_lain) < 2:
                 kemungkinan_lain.append(hp)
 
-    gejala_detail = [{"id": gid, "nama": SEMUA_GEJALA.get(gid, gid)} for gid in gejala_dipilih]
+    # Buat detail gejala dengan keyakinan user
+    gejala_detail = []
+    for gid, cf_user in gejala_dipilih.items():
+        gejala_detail.append({
+            "id": gid,
+            "nama": SEMUA_GEJALA.get(gid, gid),
+            "keyakinan": cf_user,
+            "label_keyakinan": get_label_keyakinan(cf_user),
+        })
 
     return {
-        "gejala_terpilih": gejala_dipilih,
+        "gejala_terpilih": list(gejala_dipilih.keys()),
         "gejala_terpilih_detail": gejala_detail,
         "total_gejala": len(gejala_dipilih),
         "diagnosa_utama": diagnosa_utama,
         "kemungkinan_lain": kemungkinan_lain,
-        "tidak_terdiagnosa": not diagnosa_utama and not kemungkinan_lain
+        "tidak_terdiagnosa": not diagnosa_utama and not kemungkinan_lain,
     }

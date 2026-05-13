@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS riwayat_konsultasi (
     gejala      TEXT      NOT NULL,
     diagnosa    TEXT,
     skor        REAL      DEFAULT 0,
+    rating      INTEGER   DEFAULT 0,
     timestamp   TEXT      NOT NULL,
     created_at  TIMESTAMPTZ DEFAULT NOW()
 );

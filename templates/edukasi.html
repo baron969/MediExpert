@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Edukasi Kesehatan — Diagnova{% endblock %}
+
+{% block content %}
+<div class="relative pt-32 pb-24 overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-emerald-400/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute bottom-10 right-10 w-72 h-72 bg-brand-500/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+    </div>
+    <div class="max-w-5xl mx-auto px-4 relative z-10 text-center" data-aos="fade-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 font-bold text-sm mb-6 shadow-sm border border-emerald-100 dark:border-slate-700">
+            <i class="fas fa-graduation-cap"></i> Pusat Edukasi
+        </div>
+        <h1 class="font-display text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">Edukasi <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-brand-600">Kesehatan</span></h1>
+        <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Artikel dan panduan seputar kesehatan pernapasan yang disusun berdasarkan sumber terpercaya.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 -mt-12 relative z-20 mb-8">
+    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-glass border border-white dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <span class="font-bold text-slate-700 dark:text-slate-300"><span class="text-emerald-500">{{ total_artikel }}</span> Artikel Tersedia</span>
+        </div>
+        <div class="flex flex-wrap gap-2" id="filterButtons">
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-full bg-slate-900 dark:bg-brand-600 text-white transition-all" data-filter="all">Semua</button>
+            {% for kat in kategori_list %}
+            <button class="filter-btn px-4 py-2 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all" data-filter="{{ kat }}">{{ kat }}</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="pb-20 px-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="artikelGrid">
+            {% for a in artikel %}
+            <article class="artikel-card bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-all duration-300 group flex flex-col" data-kategori="{{ a.kategori }}" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+                <div class="p-6 flex flex-col flex-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-xs font-bold px-3 py-1 rounded-full bg-{{ a.warna }}-50 dark:bg-{{ a.warna }}-900/30 text-{{ a.warna }}-600 dark:text-{{ a.warna }}-400 border border-{{ a.warna }}-100 dark:border-{{ a.warna }}-800">{{ a.kategori }}</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-{{ a.warna }}-50 dark:bg-{{ a.warna }}-900/30 text-{{ a.warna }}-500 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fas {{ a.gambar }}"></i>
+                    </div>
+                    <h3 class="font-display text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug">{{ a.judul }}</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed flex-1">{{ a.ringkasan }}</p>
+                    <button onclick="bukaArtikel('{{ a.id }}')" class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 transition-colors">
+                        Baca Selengkapnya <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="artikelModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="tutupArtikel()"></div>
+    <div class="absolute inset-x-4 top-8 bottom-8 max-w-3xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center text-lg" id="modalIkon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider" id="modalKategori"></span>
+                    <h3 class="font-display text-xl font-bold text-slate-900 dark:text-white" id="modalJudul"></h3>
+                </div>
+            </div>
+            <button onclick="tutupArtikel()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors shrink-0">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1" id="modalIsi"></div>
+        <div class="p-6 border-t border-slate-100 dark:border-slate-700 shrink-0">
+            <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400 dark:text-slate-500" id="modalSumber"></span>
+                <button onclick="tutupArtikel()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold rounded-xl transition-colors">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const artikelData = {{ artikel | tojson | safe }};
+
+function bukaArtikel(id) {
+    const a = artikelData.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('modalJudul').textContent = a.judul;
+    document.getElementById('modalKategori').textContent = a.kategori;
+    document.getElementById('modalSumber').textContent = 'Sumber: ' + (a.sumber || '');
+    document.getElementById('modalIkon').innerHTML = '<i class="fas ' + a.gambar + '"></i>';
+    document.getElementById('modalIsi').innerHTML = a.isi.map(p => '<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">' + p + '</p>').join('');
+    document.getElementById('artikelModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function tutupArtikel() {
+    document.getElementById('artikelModal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.className = b.className.replace(/bg-slate-900 dark:bg-brand-600 text-white/, 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300');
+            });
+            btn.className = btn.className.replace(/bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300/, 'bg-slate-900 dark:bg-brand-600 text-white');
+            const filter = btn.dataset.filter;
+            document.querySelectorAll('.artikel-card').forEach(card => {
+                card.style.display = (filter === 'all' || card.dataset.kategori === filter) ? '' : 'none';
+            });
+        });
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') tutupArtikel();
+    });
+});
+</script>
+{% endblock %}

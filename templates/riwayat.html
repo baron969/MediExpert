@@ -48,6 +48,17 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
             </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between transition-colors">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Kepuasan Pengguna</p>
+                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-white">{{ rating_stats.rata_rata }} <span class="text-base font-bold text-yellow-400">&#9733;</span></h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ rating_stats.total_rating }} ulasan</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-yellow-50 dark:bg-yellow-900/30 text-yellow-500 flex items-center justify-center text-xl">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
         </div>
 
         <!-- CHARTS -->
@@ -89,6 +100,7 @@
                             <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Pasien</th>
                             <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Hasil Analisis</th>
                             <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Skor</th>
+                            <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Rating</th>
                             <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">Waktu</th>
                             <th class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 text-right">Aksi</th>
                         </tr>
@@ -117,6 +129,14 @@
                                 {% endif %}
                             </td>
                             <td class="px-6 py-4 text-sm font-bold text-brand-600 dark:text-brand-400">{{ item.skor | round | int }}%</td>
+                            <td class="px-6 py-4">
+                                {% set r = item.get('rating', 0) | int %}
+                                {% if r > 0 %}
+                                <span class="text-yellow-400 text-sm">{% for i in range(r) %}&#9733;{% endfor %}</span>
+                                {% else %}
+                                <span class="text-xs text-slate-400 dark:text-slate-500">—</span>
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">{{ item.timestamp }}</td>
                             <td class="px-6 py-4 text-right">
                                 <form action="{{ url_for('hapus_riwayat', item_id=item.id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">

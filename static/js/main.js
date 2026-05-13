@@ -93,25 +93,28 @@ function toggleAccordion(id) {
 
 // Index Form Logic
 function updateGejalaCount() {
-    const checkedCount = document.querySelectorAll('.gejala-checkbox:checked').length;
+    const allRadios = document.querySelectorAll('.keyakinan-radio:checked');
+    let count = 0;
+    allRadios.forEach(r => { if (parseFloat(r.value) > 0) count++; });
+    
     const countEl = document.getElementById('gejalaCount');
     const textEl = document.getElementById('gejalaText');
     const btnSubmit = document.getElementById('btnSubmit');
     const floatBar = document.getElementById('floatingBar');
 
-    if (countEl) countEl.textContent = checkedCount;
+    if (countEl) countEl.textContent = count;
 
     if (floatBar) {
-        if (checkedCount > 0) {
+        if (count > 0) {
             floatBar.classList.add('show');
         } else {
             floatBar.classList.remove('show');
         }
     }
 
-    if (checkedCount < 3) {
+    if (count < 3) {
         if (btnSubmit) btnSubmit.disabled = true;
-        if (textEl) textEl.innerHTML = `Kurang ${3 - checkedCount} gejala lagi`;
+        if (textEl) textEl.innerHTML = `Kurang ${3 - count} gejala lagi`;
     } else {
         if (btnSubmit) btnSubmit.disabled = false;
         if (textEl) textEl.innerHTML = `<span class="text-brand-300 font-bold">Siap dianalisis!</span>`;

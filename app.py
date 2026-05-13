@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, url_for, session
 from supabase import create_client, Client
 
-from data_penyakit import DATA_PENYAKIT, SEMUA_GEJALA
-from metode import forward_chaining, get_semua_gejala_terformat
+from data_penyakit import DATA_PENYAKIT, SEMUA_GEJALA, DESKRIPSI_GEJALA
+from data_artikel import ARTIKEL
+from metode import certainty_factor_method, get_semua_gejala_terformat
 
 # ---------------------------------------------------------------------------
 # Load Environment Variables
@@ -42,7 +43,7 @@ def get_supabase() -> Client:
 
 
 def init_sqlite():
-    """Buat tabel SQLite sebagai fallback."""
+    """Buat tabel SQLite sebagai fallback + migrasi kolom baru."""
     conn = sqlite3.connect(DB_PATH)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS riwayat_konsultasi (
@@ -53,10 +54,23 @@ def init_sqlite():
             gejala TEXT NOT NULL,
             diagnosa TEXT,
             skor REAL DEFAULT 0,
+            rating INTEGER DEFAULT 0,
             timestamp TEXT NOT NULL
         )
     """)
     conn.commit()
+    # Migrasi untuk tabel yang dibuat dengan schema lama
+    migrasi_kolom = [
+        ("umur", "INTEGER DEFAULT 0"),
+        ("jenis_kelamin", "TEXT DEFAULT 'Tidak diketahui'"),
+        ("rating", "INTEGER DEFAULT 0"),
+    ]
+    for col, col_type in migrasi_kolom:
+        try:
+            conn.execute(f"ALTER TABLE riwayat_konsultasi ADD COLUMN {col} {col_type}")
+            conn.commit()
+        except Exception:
+            pass
     conn.close()
 
 
@@ -66,8 +80,9 @@ except Exception as e:
     print(f"[WARNING] Tidak bisa inisialisasi SQLite (mungkin read-only): {e}")
 
 
-def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: list, diagnosa: str, skor: float):
-    """Simpan ke Supabase; fallback ke SQLite jika gagal."""
+def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: list, diagnosa: str, skor: float, rating: int = 0) -> int:
+    """Simpan ke Supabase; fallback ke SQLite jika gagal. Return record ID."""
+    timestamp = datetime.now().strftime("%d %B %Y, %H:%M:%S")
     data_sqlite = {
         "nama_pasien": nama_pasien,
         "umur": umur,
@@ -75,44 +90,59 @@ def simpan_riwayat(nama_pasien: str, umur: int, jenis_kelamin: str, gejala_ids: 
         "gejala": json.dumps(gejala_ids),
         "diagnosa": diagnosa,
         "skor": round(skor, 2),
-        "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
-    }
-    
-    data_supabase_lama = {
-        "nama_pasien": nama_pasien,
-        "gejala": json.dumps(gejala_ids),
-        "diagnosa": diagnosa,
-        "skor": round(skor, 2),
-        "timestamp": datetime.now().strftime("%d %B %Y, %H:%M:%S"),
+        "rating": rating,
+        "timestamp": timestamp,
     }
     
     try:
         db = get_supabase()
         if db:
-            try:
-                db.table("riwayat_konsultasi").insert(data_sqlite).execute()
-                return
-            except Exception as e:
-                print(f"[INFO] Insert dengan umur & jenis_kelamin gagal, fallback schema lama: {e}")
-                db.table("riwayat_konsultasi").insert(data_supabase_lama).execute()
-                return
+            resp = db.table("riwayat_konsultasi").insert(data_sqlite).execute()
+            if resp.data:
+                row_id = resp.data[0].get("id", 0)
+            print(f"[INFO] Data tersimpan ke Supabase (ID: {row_id})")
+            return row_id
     except Exception as e:
         print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
     # Fallback SQLite
     try:
         conn = sqlite3.connect(DB_PATH)
-        conn.execute(
-            "INSERT INTO riwayat_konsultasi (nama_pasien,umur,jenis_kelamin,gejala,diagnosa,skor,timestamp) VALUES (?,?,?,?,?,?,?)",
-            (data_sqlite["nama_pasien"], data_sqlite["umur"], data_sqlite["jenis_kelamin"], data_sqlite["gejala"], data_sqlite["diagnosa"], data_sqlite["skor"], data_sqlite["timestamp"])
+        cur = conn.execute(
+            "INSERT INTO riwayat_konsultasi (nama_pasien,umur,jenis_kelamin,gejala,diagnosa,skor,rating,timestamp) VALUES (?,?,?,?,?,?,?,?)",
+            (data_sqlite["nama_pasien"], data_sqlite["umur"], data_sqlite["jenis_kelamin"], data_sqlite["gejala"], data_sqlite["diagnosa"], data_sqlite["skor"], data_sqlite["rating"], data_sqlite["timestamp"])
         )
+        row_id = cur.lastrowid or 0
         conn.commit()
         conn.close()
+        print(f"[INFO] Data tersimpan ke SQLite (ID: {row_id})")
     except Exception as e:
         print(f"[ERROR] SQLite simpan gagal: {e}")
+    return row_id
 
 
 def ambil_riwayat(limit: int = 50) -> list:
-    """Ambil riwayat dari Supabase; fallback ke SQLite jika gagal."""
+    """Ambil riwayat dari SQLite (primary); sync dari Supabase jika ada."""
+    hasil = []
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT * FROM riwayat_konsultasi ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        conn.close()
+        for row in rows:
+            item = dict(row)
+            try:
+                gejala_ids = json.loads(item.get("gejala", "[]"))
+                item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
+            except Exception:
+                item["gejala_nama"] = []
+            hasil.append(item)
+    except Exception as e:
+        print(f"[ERROR] SQLite ambil riwayat gagal: {e}")
+
+    if hasil:
+        return hasil
+
+    # Fallback Supabase jika SQLite kosong (misal di Vercel)
     try:
         db = get_supabase()
         if db:
@@ -130,30 +160,12 @@ def ambil_riwayat(limit: int = 50) -> list:
                     item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
                 except Exception:
                     item["gejala_nama"] = []
-                
-                # Default jika belum ada kolom di Supabase
                 item["umur"] = item.get("umur", 0)
                 item["jenis_kelamin"] = item.get("jenis_kelamin", "-")
+                item["rating"] = item.get("rating", 0)
             return rows
     except Exception as e:
-        print(f"[WARNING] Supabase gagal, fallback SQLite: {e}")
-    # Fallback SQLite
-    hasil = []
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row
-        rows = conn.execute("SELECT * FROM riwayat_konsultasi ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
-        conn.close()
-        for row in rows:
-            item = dict(row)
-            try:
-                gejala_ids = json.loads(item.get("gejala", "[]"))
-                item["gejala_nama"] = [SEMUA_GEJALA.get(g, g) for g in gejala_ids]
-            except Exception:
-                item["gejala_nama"] = []
-            hasil.append(item)
-    except Exception as e:
-        print(f"[ERROR] SQLite ambil riwayat gagal: {e}")
+        print(f"[WARNING] Supabase ambil riwayat gagal: {e}")
     return hasil
 
 
@@ -207,6 +219,38 @@ def hapus_riwayat_by_id(item_id: int):
         print(f"[ERROR] SQLite hapus gagal: {e}")
 
 
+def update_rating(item_id: int, rating: int):
+    """Update rating di Supabase; fallback ke SQLite."""
+    try:
+        db = get_supabase()
+        if db:
+            db.table("riwayat_konsultasi").update({"rating": rating}).eq("id", item_id).execute()
+            return
+    except Exception as e:
+        print(f"[WARNING] Supabase update rating gagal, fallback SQLite: {e}")
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute("UPDATE riwayat_konsultasi SET rating = ? WHERE id = ?", (rating, item_id))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[ERROR] SQLite update rating gagal: {e}")
+
+
+def ambil_rata_rata_rating() -> dict:
+    """Hitung rata-rata rating dari SQLite."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        row = conn.execute("SELECT COUNT(*), COALESCE(SUM(rating), 0), COALESCE(AVG(rating), 0) FROM riwayat_konsultasi WHERE rating > 0").fetchone()
+        conn.close()
+        total = row[0]
+        rata = round(row[2], 1) if total > 0 else 0
+        return {"total_rating": total, "rata_rata": rata}
+    except Exception as e:
+        print(f"[ERROR] SQLite ambil rating gagal: {e}")
+        return {"total_rating": 0, "rata_rata": 0}
+
+
 # ===========================================================================
 # AUTHENTICATION
 # ===========================================================================
@@ -258,6 +302,18 @@ def index():
         total_gejala=len(SEMUA_GEJALA),
         total_penyakit=len(DATA_PENYAKIT),
         daftar_penyakit=DATA_PENYAKIT,
+        deskripsi_gejala=DESKRIPSI_GEJALA,
+    )
+
+
+@app.route("/edukasi")
+def edukasi():
+    kategori_list = sorted(set(a["kategori"] for a in ARTIKEL))
+    return render_template(
+        "edukasi.html",
+        artikel=ARTIKEL,
+        kategori_list=kategori_list,
+        total_artikel=len(ARTIKEL),
     )
 
 
@@ -266,7 +322,15 @@ def diagnosa():
     nama_pasien    = request.form.get("nama_pasien", "Anonim").strip() or "Anonim"
     umur           = int(request.form.get("umur", 0) or 0)
     jenis_kelamin  = request.form.get("jenis_kelamin", "Tidak diketahui").strip()
-    gejala_dipilih = request.form.getlist("gejala")
+
+    # Kumpulkan keyakinan user per gejala dari form radio button
+    gejala_dipilih = {}
+    for key, value in request.form.items():
+        if key.startswith("keyakinan_"):
+            gid = key.replace("keyakinan_", "")
+            cf_user = float(value)
+            if cf_user > 0:
+                gejala_dipilih[gid] = cf_user
 
     if not gejala_dipilih:
         return render_template(
@@ -274,6 +338,7 @@ def diagnosa():
             kategori_gejala=get_semua_gejala_terformat(),
             total_gejala=len(SEMUA_GEJALA),
             total_penyakit=len(DATA_PENYAKIT),
+            deskripsi_gejala=DESKRIPSI_GEJALA,
             error="Harap pilih minimal 1 gejala sebelum melakukan diagnosa.",
         )
 
@@ -283,11 +348,12 @@ def diagnosa():
             kategori_gejala=get_semua_gejala_terformat(),
             total_gejala=len(SEMUA_GEJALA),
             total_penyakit=len(DATA_PENYAKIT),
+            deskripsi_gejala=DESKRIPSI_GEJALA,
             error="Untuk hasil diagnosa yang akurat, pilih minimal 3 gejala.",
-            gejala_terpilih=gejala_dipilih,
+            gejala_terpilih=list(gejala_dipilih.keys()),
         )
 
-    hasil = forward_chaining(gejala_dipilih, umur, jenis_kelamin)
+    hasil = certainty_factor_method(gejala_dipilih, umur, jenis_kelamin)
 
     nama_diagnosa = "Tidak Terdiagnosa"
     skor_diagnosa = 0.0
@@ -298,7 +364,7 @@ def diagnosa():
         nama_diagnosa = f"Kemungkinan: {hasil['kemungkinan_lain'][0]['nama']}"
         skor_diagnosa = hasil["kemungkinan_lain"][0]["skor"]
 
-    simpan_riwayat(nama_pasien, umur, jenis_kelamin, gejala_dipilih, nama_diagnosa, skor_diagnosa)
+    record_id = simpan_riwayat(nama_pasien, umur, jenis_kelamin, list(gejala_dipilih.keys()), nama_diagnosa, skor_diagnosa)
 
     return render_template(
         "hasil.html",
@@ -307,6 +373,8 @@ def diagnosa():
         umur=umur,
         jenis_kelamin=jenis_kelamin,
         timestamp=datetime.now().strftime("%d %B %Y, %H:%M"),
+        record_id=record_id,
+        rating_saved=0,
     )
 
 
@@ -315,7 +383,8 @@ def diagnosa():
 def riwayat():
     data_riwayat = ambil_riwayat(limit=50)
     statistik    = ambil_statistik()
-    return render_template("riwayat.html", riwayat=data_riwayat, statistik=statistik)
+    rating_stats = ambil_rata_rata_rating()
+    return render_template("riwayat.html", riwayat=data_riwayat, statistik=statistik, rating_stats=rating_stats)
 
 
 @app.route("/riwayat/hapus/<int:item_id>", methods=["POST"])
@@ -329,6 +398,17 @@ def hapus_riwayat(item_id: int):
 @login_required
 def api_statistik():
     return jsonify(ambil_statistik())
+
+
+@app.route("/api/rating", methods=["POST"])
+def api_rating():
+    data = request.get_json(silent=True) or {}
+    item_id = data.get("id", 0)
+    rating = int(data.get("rating", 0))
+    if item_id and 1 <= rating <= 5:
+        update_rating(item_id, rating)
+        return jsonify({"ok": True, "rating": rating})
+    return jsonify({"ok": False, "error": "Invalid id or rating"}), 400
 
 
 @app.route("/tentang")
